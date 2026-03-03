@@ -1,0 +1,16 @@
+name: global_preproc
+output_dir: results/global_preproc
+start_date: "2019-01-01"
+end_date: "2025-12-31"
+window_days: null
+metric_cache_dir: ~/cache
+                                                                                                                                                                                                               
+weights:
+  uptime_pct: 0.25
+  slips_per_day: 0.2
+  cn0_mean: 0.25
+  mp1: 0.125
+  mp2: 0.125
+  
+variants:
+  - {name: additive,  aggregator: weighted_sum}
