@@ -2,6 +2,7 @@ import yaml
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from metrics import METRICS
 
 
 @dataclass(frozen=True)
@@ -44,7 +45,7 @@ def _validate(config: ScoreConfig) -> None:
     errors: list[str] = []
     if config.start_date >= config.end_date:
         errors.append("start date is before end date")
-    unknown = set(config.weights) - set(config.metrics)
+    unknown = set(config.weights) - METRICS.keys()
     if unknown:
         errors.append(f"weights for unconfigured metrics: {unknown}")
 

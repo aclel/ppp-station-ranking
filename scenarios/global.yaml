@@ -6,9 +6,9 @@ window_days: null
 metric_cache_dir: ~/cache
                                                                                                                                                                                                                
 weights:
-  uptime_pct: 0.25
-  slips_per_day: 0.2
-  cn0_mean: 0.25
+  uptime: 0.25
+  amb_resets: 0.2
+  cn0: 0.25
   mp1: 0.125
   mp2: 0.125
   
