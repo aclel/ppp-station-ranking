@@ -1,0 +1,106 @@
+from pathlib import Path
+from .base import raw_files, filter_readable, make_connection
+from metrics import thresholds
+
+import duckdb
+import pandas as pd
+
+
+PATTERN = "*_smoothed_network_residuals_smoothed.parquet"
+
+
+def build_residuals(
+    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
+) -> pd.DataFrame:
+    files = raw_files(year, month, raw_root, PATTERN)
+    files = filter_readable(raw_files(year, month, raw_root, PATTERN))
+    if not files:
+        return _empty_frame()
+
+    return _residuals_sql(files, conn)
+
+
+def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+    phase_low, phase_hi = thresholds("phase_wrms")
+    code_low, code_hi = thresholds("code_wrms")
+
+    sql = f"""
+    WITH considered AS (                                                                                                                           
+        SELECT        
+        recv AS station,                                                                                                                           
+        CAST(date AS DATE) AS day,          
+        meas,
+        sigma,                                                                                                                                     
+        CASE WHEN meas = 'PHAS_MEAS' THEN postfit * 1000.0   -- mm
+            WHEN meas = 'CODE_MEAS' THEN postfit * 100.0    -- cm                                                                                 
+        END AS res                          
+        FROM read_parquet({files}, union_by_name=true)
+        WHERE sigma > 0 AND postfit IS NOT NULL
+    )
+    SELECT               
+        station, day,                                                                                                                                
+                        
+        -- phase                                                                                                                                     
+        SQRT(              
+        SUM(CASE WHEN meas='PHAS_MEAS' AND res BETWEEN ? AND ?
+                THEN res*res / (sigma*sigma) END)
+        / NULLIF(SUM(CASE WHEN meas='PHAS_MEAS' AND res BETWEEN ? AND ?
+                            THEN 1.0 / (sigma*sigma) END), 0)                                                                                        
+        ) AS phase_wrms,                          
+        SUM(CASE WHEN meas='PHAS_MEAS' THEN 1 ELSE 0 END) AS phase_n_obs,                                                                            
+        SUM(CASE WHEN meas='PHAS_MEAS' AND (res < ? OR res > ?)
+                THEN 1 ELSE 0 END) AS phase_n_outliers,                                                                                             
+                                                
+        -- code                                                                                                                                      
+        SQRT(         
+        SUM(CASE WHEN meas='CODE_MEAS' AND res BETWEEN ? AND ?                                                                                     
+                THEN res*res / (sigma*sigma) END)
+        / NULLIF(SUM(CASE WHEN meas='CODE_MEAS' AND res BETWEEN ? AND ?                                                                            
+                            THEN 1.0 / (sigma*sigma) END), 0)
+        ) AS code_wrms,                                                                                                                              
+        SUM(CASE WHEN meas='CODE_MEAS' THEN 1 ELSE 0 END) AS code_n_obs,
+        SUM(CASE WHEN meas='CODE_MEAS' AND (res < ? OR res > ?)                                                                                      
+                THEN 1 ELSE 0 END) AS code_n_outliers                                                                                                                                        
+    FROM considered                                                                                                                                
+    GROUP BY station, day                                                                                                                          
+    ORDER BY station, day
+    """
+
+    df = conn.execute(
+        sql,
+        [
+            phase_low,
+            phase_hi,
+            phase_low,
+            phase_hi,
+            phase_low,
+            phase_hi,
+            code_low,
+            code_hi,
+            code_low,
+            code_hi,
+            code_low,
+            code_hi,
+        ],
+    ).df()
+    df["date"] = df["day"].dt.date
+    return df
+
+
+def _empty_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        columns=[
+            "station",
+            "day",
+            "phase_wrms",
+            "phase_n_obs",
+            "phase_n_outliers",
+            "code_wrms",
+            "code_n_obs",
+            "code_n_outliers",
+        ]
+    )
+
+conn = conn = make_connection()
+df = build_residuals(2019, 1, Path("/data/parquet"), conn)
+print(df)
