@@ -41,14 +41,14 @@ def raw_files(year, month, raw_root: Path, pattern: str) -> list[str]:
 
 def _is_readable(path: str) -> bool:
     try:
-        pq.ParquetFile(path)
-        return True
+        pf = pq.ParquetFile(path)
+        return pf.metadata.num_columns > 0
     except Exception:
         return False
 
 
 def filter_readable(files: list[str], workers: int = 16) -> list[str]:
-    """ Opens each parquet file in the list and checks if they can be read. """
+    """Opens each parquet file in the list and checks if they can be read."""
     with ThreadPoolExecutor(max_workers=workers) as ex:
         ok = list(ex.map(_is_readable, files))
     kept = [f for f, k in zip(files, ok) if k]
