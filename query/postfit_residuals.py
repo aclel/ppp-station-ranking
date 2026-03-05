@@ -1,5 +1,5 @@
 from pathlib import Path
-from .base import raw_files, filter_readable, make_connection
+from .base import raw_files, filter_readable, sql_file_list
 from metrics import thresholds
 
 import duckdb
@@ -13,7 +13,8 @@ def build_residuals(
     year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
 ) -> pd.DataFrame:
     files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(raw_files(year, month, raw_root, PATTERN))
+    files = filter_readable(files)
+    files = sql_file_list(files)
     if not files:
         return _empty_frame()
 
@@ -100,7 +101,3 @@ def _empty_frame() -> pd.DataFrame:
             "code_n_outliers",
         ]
     )
-
-conn = conn = make_connection()
-df = build_residuals(2019, 1, Path("/data/parquet"), conn)
-print(df)

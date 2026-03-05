@@ -61,3 +61,9 @@ def filter_readable(files: list[str], workers: int = 16) -> list[str]:
             dropped[:3],
         )
     return kept
+
+
+def sql_file_list(files: list[str]) -> str:
+    """DuckDB SQL list literal for a list of file paths."""
+    inner = ", ".join(f"'{f}'" for f in files)
+    return f"[{inner}]"
