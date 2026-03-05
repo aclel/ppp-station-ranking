@@ -26,7 +26,7 @@ METRICS: dict[str, Metric] = {
         Metric("uptime", direction="max", units="%"),
         Metric("active_uptime", direction="max", units="%"),
         Metric("outage_gaps", direction="min", units="count"),
-        Metric("amb_resets", direction="min", units="count per day"),
+        Metric("amb_resets", direction="min", units="count per day", thresh_min=0, thresh_max=6000),
         Metric("cn0", direction="max", units="dB-Hz"),
         Metric("mp1", direction="min", units="m"),
         Metric("mp2", direction="min", units="m"),
