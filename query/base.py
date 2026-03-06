@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import duckdb
 import pyarrow.parquet as pq
+import pandas as pd
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +62,14 @@ def filter_readable(files: list[str], workers: int = 16) -> list[str]:
             dropped[:3],
         )
     return kept
+
+
+def write_month(df: pd.DataFrame, family: str, year_month: str, out_root: Path) -> Path:
+    out_dir = out_root / family
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"{year_month}.parquet"
+    df.to_parquet(out_path, index=False)
+    return out_path
 
 
 def sql_file_list(files: list[str]) -> str:
