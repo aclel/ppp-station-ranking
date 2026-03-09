@@ -1,16 +1,14 @@
 name: global_preproc
 output_dir: results/global_preproc
 start_date: "2019-01-01"
-end_date: "2025-12-31"
+end_date: "2025-11-15"
 window_days: null
-metric_cache_dir: ~/cache
+cache_dir: cache/query
                                                                                                                                                                                                                
 weights:
-  uptime: 0.25
+  phase_wrms: 0.25
+  code_wrms: 0.25
   amb_resets: 0.2
-  cn0: 0.25
-  mp1: 0.125
-  mp2: 0.125
   
 variants:
   - {name: additive,  aggregator: weighted_sum}
