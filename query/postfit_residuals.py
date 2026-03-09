@@ -84,7 +84,6 @@ def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.Data
             code_hi,
         ],
     ).df()
-    df["date"] = df["day"].dt.date
     return df
 
 

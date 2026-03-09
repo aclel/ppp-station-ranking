@@ -15,6 +15,7 @@ class Variant:
 class ScoreConfig:
     name: str
     output_dir: Path
+    cache_dir: Path
     start_date: date
     end_date: date
     weights: dict[str, float]
@@ -33,6 +34,7 @@ def _build_config(raw: dict, base_dir: Path) -> ScoreConfig:
     return ScoreConfig(
         name=raw["name"],
         output_dir=(base_dir / raw["output_dir"]).resolve(),
+        cache_dir=raw['cache_dir'].resolve(),
         start_date=date.fromisoformat(raw["start_date"]),
         end_date=date.fromisoformat(raw["end_date"]),
         weights={name: float(w) for name, w in raw["weights"].items()},
@@ -60,6 +62,3 @@ def load_config(path: Path) -> ScoreConfig:
     config = _build_config(raw, base_dir=path.parent)
     _validate(config)
     return config
-
-
-load_config(Path("scenarios/global.yaml"))

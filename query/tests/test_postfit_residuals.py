@@ -15,7 +15,7 @@ def test_residuals_one_station_one_day():
     assert len(df) == 1
     row = df.iloc[0]
     assert row["station"] == "TOW2"
-    assert str(row["date"]) == "2019-01-01"
+    assert str(row["day"]) == "2019-01-01 00:00:00"
 
     # phase_wrms in mm: healthy station should be 1–5 mm
     assert -10 < row["phase_wrms"] < 10.0
