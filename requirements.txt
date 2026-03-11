@@ -1,6 +1,7 @@
 click
 duckdb
 pandas
+plotly
 pyarrow
 pytest
 pyyaml
