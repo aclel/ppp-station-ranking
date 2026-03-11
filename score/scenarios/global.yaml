@@ -1,5 +1,5 @@
-name: global_preproc
-output_dir: results/global_preproc
+name: global
+output_dir: results/global
 start_date: "2019-01-01"
 end_date: "2025-11-15"
 window_days: null
