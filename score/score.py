@@ -17,4 +17,3 @@ def run(config: ScoreConfig) -> None:
     windows = build_windows(scaled, config)
     scores = weighted_sum(windows, config.weights)
     ranks = rank(scores, config)
-    print(ranks)

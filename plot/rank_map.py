@@ -1,11 +1,12 @@
 from .utils import inclination_contours
 
+import pandas as pd
 import plotly.graph_objects as go
 
 IGRF_CSV = "data/igrfgridData.csv"
 
 
-def make_map(ranking_df, contours=None, colorscale="viridis_r"):
+def make_map(ranking_df, metric_cols, contours=None, colorscale="viridis_r"):
     """Builds a map showing rank with colour"""
     fig = go.Figure()
 
@@ -46,7 +47,11 @@ def make_map(ranking_df, contours=None, colorscale="viridis_r"):
                 lambda r: (
                     f"<b>{r['station']}</b><br>"
                     f"Rank: {int(r['rank'])}<br>"
-                    f"Score: {r['score']:.3f}"
+                    f"Score: {r['score']:.3f}<br>"
+                    + "<br>".join(
+                        f"{m}: {r[m]:.2f}" if pd.notna(r[m]) else f"{m}: -"
+                        for m in metric_cols
+                    )
                 ),
                 axis=1,
             ),

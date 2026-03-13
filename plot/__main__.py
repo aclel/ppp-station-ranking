@@ -1,4 +1,5 @@
 from .rank_map import make_map
+from .score_trends import make_trends
 
 import pandas as pd
 
@@ -16,7 +17,23 @@ def plot():
         stations[["station", "Latitude", "Longitude"]], on="station", how="left"
     )
 
-    make_map(ranks)
+    metric_cols = [
+        c
+        for c in ranks.columns
+        if c
+        not in {
+            "station",
+            "window_start",
+            "window_end",
+            "score",
+            "rank",
+            "Latitude",
+            "Longitude",
+        }
+    ]
+
+    make_map(ranks, metric_cols)
+    make_trends(ranks, metric_cols)
 
 
 if __name__ == "__main__":
