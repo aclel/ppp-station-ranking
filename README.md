@@ -8,4 +8,8 @@ This command generates a query cache for postfit residudals over the full time s
 
 ```
 python -m query postfit_residuals 2019-01-01 2025-12-25
+
+python -m score --config score/scenarios/global.yaml
+
+python -m plot
 ```
