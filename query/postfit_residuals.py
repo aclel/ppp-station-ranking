@@ -1,6 +1,6 @@
 from pathlib import Path
 from .base import raw_files, filter_readable, sql_file_list
-from metrics import thresholds
+from metrics import extremes
 
 import duckdb
 import pandas as pd
@@ -22,8 +22,8 @@ def build_residuals(
 
 
 def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
-    phase_low, phase_hi = thresholds("phase_wrms")
-    code_low, code_hi = thresholds("code_wrms")
+    phase_low, phase_hi = extremes("phase_wrms")
+    code_low, code_hi = extremes("code_wrms")
 
     sql = f"""
     WITH considered AS (                                                                                                                           

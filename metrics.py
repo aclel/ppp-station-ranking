@@ -10,10 +10,10 @@ class Metric:
     name: str
     units: str
     direction: Direction  # Is higher better?
-    thresh_min: float | None = (
+    extreme_min: float | None = (
         None  # Drop anything less than this from dataset - for extreme outliers only
     )
-    thresh_max: float | None = (
+    extreme_max: float | None = (
         None  # Drop anything more than this from the metric - for extreme outliers only
     )
     log_transform: bool = False  # Run log transform on a metric to fix skew (like ambiguity resets where most stations are good but some have lots)
@@ -23,10 +23,10 @@ METRICS: dict[str, Metric] = {
     m.name: m
     for m in (
         Metric(
-            "phase_wrms", direction="min", units="mm", thresh_min=-10, thresh_max=10
+            "phase_wrms", direction="min", units="mm", extreme_min=-100, extreme_max=100
         ),
         Metric(
-            "code_wrms", direction="min", units="cm", thresh_min=-150, thresh_max=150
+            "code_wrms", direction="min", units="cm", extreme_min=-500, extreme_max=500
         ),
         Metric("h_conv", direction="min", units="min"),
         Metric("v_conv", direction="min", units="min"),
@@ -37,8 +37,8 @@ METRICS: dict[str, Metric] = {
             "amb_resets",
             direction="min",
             units="count per day",
-            thresh_min=0,
-            thresh_max=11000,
+            extreme_min=0,
+            extreme_max=20000,
             log_transform=True,
         ),
         Metric("cn0", direction="max", units="dB-Hz"),
@@ -48,10 +48,10 @@ METRICS: dict[str, Metric] = {
 }
 
 
-def thresholds(metric_name: str) -> tuple[float, float]:
+def extremes(metric_name: str) -> tuple[float, float]:
     """Minimum and maximum thresholds for extreme value detection when querying."""
     m = METRICS[metric_name]
     return (
-        m.thresh_min if m.thresh_min is not None else float("-inf"),
-        m.thresh_max if m.thresh_max is not None else float("inf"),
+        m.extreme_min if m.extreme_min is not None else float("-inf"),
+        m.extreme_max if m.extreme_max is not None else float("inf"),
     )
