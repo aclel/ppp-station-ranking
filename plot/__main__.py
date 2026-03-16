@@ -1,5 +1,6 @@
 from .rank_map import make_map
 from .score_trends import make_trends
+from .correlate import make_correlation_heatmap
 
 import pandas as pd
 
@@ -34,6 +35,7 @@ def plot():
 
     make_map(ranks, metric_cols)
     make_trends(ranks, metric_cols)
+    make_correlation_heatmap(ranks, metric_cols)
 
 
 if __name__ == "__main__":
