@@ -6,6 +6,7 @@ from pathlib import Path
 from .base import make_connection, write_month
 from .postfit_residuals import build_residuals
 from .ambiguity_resets import build_amb_resets
+from .observations import build_observations
 
 from utils import year_months
 
@@ -14,6 +15,7 @@ log = logging.getLogger("query")
 BUILDERS = {
     "postfit_residuals": build_residuals,
     "amb_resets": build_amb_resets,
+    "observations": build_observations,
 }
 
 

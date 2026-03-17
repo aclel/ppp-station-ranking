@@ -41,7 +41,7 @@ METRICS: dict[str, Metric] = {
             extreme_max=20000,
             log_transform=True,
         ),
-        Metric("cn0", direction="max", units="dB-Hz"),
+        Metric("cn0", direction="max", units="dB-Hz", extreme_min=10, extreme_max=70),
         Metric("mp1", direction="min", units="m"),
         Metric("mp2", direction="min", units="m"),
     )

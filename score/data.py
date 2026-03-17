@@ -35,10 +35,19 @@ def _load_amb_resets(cache_dir, months) -> pd.DataFrame:
     return df[["station", "date", "metric", "value"]].dropna(subset=["value"])
 
 
+def _load_observations(cache_dir, months) -> pd.DataFrame:
+    df = _read_family(cache_dir, "observations", months).rename(
+        columns={"day": "date", "cn0": "value"}
+    )
+    df["metric"] = "cn0"
+    return df[["station", "date", "metric", "value"]].dropna(subset=["value"])
+
+
 def load_metrics(config: ScoreConfig) -> pd.DataFrame:
     needed = set(config.weights)
     months = [
-        f"{y:04d}-{m:02d}" for y, m in months_in_range(config.start_date, config.end_date)
+        f"{y:04d}-{m:02d}"
+        for y, m in months_in_range(config.start_date, config.end_date)
     ]
 
     frames = []
@@ -46,6 +55,8 @@ def load_metrics(config: ScoreConfig) -> pd.DataFrame:
         frames.append(_load_postfit_residuals(config.cache_dir, months, needed))
     if "amb_resets" in needed:
         frames.append(_load_amb_resets(config.cache_dir, months))
+    if "cn0" in needed:
+        frames.append(_load_observations(config.cache_dir, months))
 
     df = pd.concat(frames, ignore_index=True)
     return df[

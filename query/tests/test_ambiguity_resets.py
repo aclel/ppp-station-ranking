@@ -1,7 +1,14 @@
+from pathlib import Path
+
 from query.base import make_connection
 from query.ambiguity_resets import _amb_resets_sql
 
-TOW2_FILE = "/data/parquet/2019-01-01/TOW2/Network_TOW200AUS_R_20190010000_01D_30S_MO_201900100_network_ambiguity_resets.parquet"
+TESTS_DIR = Path(__file__).parent
+TOW2_FILE = str(
+    TESTS_DIR
+    / "data"
+    / "Network_TOW200AUS_R_20190010000_01D_30S_MO_201900100_network_ambiguity_resets.parquet"
+)
 
 
 def test_amb_resets_one_station_one_day():
