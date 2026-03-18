@@ -7,6 +7,7 @@ from .base import make_connection, write_month
 from .postfit_residuals import build_residuals
 from .ambiguity_resets import build_amb_resets
 from .observations import build_observations
+from .position import build_position
 
 from utils import year_months
 
@@ -16,6 +17,7 @@ BUILDERS = {
     "postfit_residuals": build_residuals,
     "amb_resets": build_amb_resets,
     "observations": build_observations,
+    "position": build_position,
 }
 
 

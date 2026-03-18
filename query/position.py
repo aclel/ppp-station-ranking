@@ -1,0 +1,62 @@
+from pathlib import Path
+from .base import raw_files, filter_readable, sql_file_list
+
+import duckdb
+import pandas as pd
+
+
+PATTERN = "*rnx_pos.parquet"
+
+# Converged when they cross 100mm
+THRESH_H = 0.1
+THRESH_V = 0.1
+
+
+def build_position(
+    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
+) -> pd.DataFrame:
+    files = raw_files(year, month, raw_root, PATTERN)
+    files = filter_readable(files)
+    files = sql_file_list(files)
+    if not files:
+        return _empty_frame()
+
+    return _position_sql(files, conn)
+
+
+def _position_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+    sql = f"""
+        WITH raw AS (                                                                                                               
+            SELECT                                                                                                                  
+                UPPER(LEFT(regexp_extract(filename, '/([A-Z0-9]{{4}})/', 1), 4)) AS station,                                        
+                CAST(datetime AS DATE)      AS day,                                                                                 
+                CAST(datetime AS TIMESTAMP) AS ts,                                                                                  
+                SQRT(dN*dN + dE*dE) AS errH,                                                                                        
+                ABS(dU)             AS errV                                                                                         
+            FROM read_parquet({files}, union_by_name=true, filename=true, hive_partitioning=false)                                     
+        ),                                                                                                                          
+        elapsed AS (                                                                                                                
+            SELECT                                                                                                                  
+                station, day, errH, errV,                                                                                           
+                DATEDIFF('second', MIN(ts) OVER (PARTITION BY station, day), ts) / 60.0 AS minutes_elapsed
+            FROM raw                                                                                                                
+        )                                                                                                                           
+        SELECT                                                                                                                      
+            station, day,                                                                                                           
+            MIN(CASE WHEN errH < ? THEN minutes_elapsed END) AS h_conv,
+            MIN(CASE WHEN errV < ? THEN minutes_elapsed END) AS v_conv                                                              
+        FROM elapsed
+        GROUP BY station, day                                                                                                       
+        ORDER BY station, day
+    """
+
+    df = conn.execute(sql, [THRESH_H, THRESH_V]).df()
+
+    # Fill NaNs with max epochs for the day
+    max_epochs = 1440
+    df[["h_conv", "v_conv"]] = df[["h_conv", "v_conv"]].fillna(max_epochs)
+    return df
+
+
+def _empty_frame() -> pd.DataFrame:
+    return pd.DataFrame(columns=["station", "day", "h_conv", "v_conv"])

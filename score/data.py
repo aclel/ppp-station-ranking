@@ -43,6 +43,17 @@ def _load_observations(cache_dir, months) -> pd.DataFrame:
     return df[["station", "date", "metric", "value"]].dropna(subset=["value"])
 
 
+def _load_position(cache_dir, months, needed) -> pd.DataFrame:
+    df = _read_family(cache_dir, "position", months).rename(columns={"day": "date"})
+    cols = [c for c in ("h_conv", "v_conv") if c in needed]
+    return df.melt(
+        id_vars=["station", "date"],
+        value_vars=cols,
+        var_name="metric",
+        value_name="value",
+    ).dropna(subset=["value"])
+
+
 def load_metrics(config: ScoreConfig) -> pd.DataFrame:
     needed = set(config.weights)
     months = [
@@ -57,6 +68,8 @@ def load_metrics(config: ScoreConfig) -> pd.DataFrame:
         frames.append(_load_amb_resets(config.cache_dir, months))
     if "cn0" in needed:
         frames.append(_load_observations(config.cache_dir, months))
+    if needed & {"h_conv", "v_conv"}:
+        frames.append(_load_position(config.cache_dir, months, needed))
 
     df = pd.concat(frames, ignore_index=True)
     return df[

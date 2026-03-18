@@ -7,9 +7,11 @@ cache_dir: cache/query
                                                                                                                                                                                                                
 weights:
   phase_wrms: 0.25
-  code_wrms: 0.25
-  amb_resets: 0.2
+  code_wrms: 0.1
+  amb_resets: 0.15
   cn0: 0.2
+  h_conv: 0.1
+  v_conv: 0.1
   
 variants:
   - {name: additive,  aggregator: weighted_sum}
