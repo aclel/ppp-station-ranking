@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def normalise(df: pd.DataFrame, k: float = 3.0):
-    """Flips metrics to same direction, clips to k IQRS,
+    """Flips metrics to same direction, clips to 1% and 99%
     and does min max scaling to [0, 1].
     """
     # Log transform metrics that are skewed like ambiguity resets (see METRICS)
@@ -19,20 +19,17 @@ def normalise(df: pd.DataFrame, k: float = 3.0):
     )
     oriented = v * signs
 
-    # Compute IQR
+    # Winsorise to 1% and 99%. The outliers are still kept, they're just clipped
+    # to the floor/ceiling. We don't want to remove them because we still want
+    # to know that the station is producing very large/small numbers.
+    lower_pct = 0.01
+    upper_pct = 0.99
     g = oriented.groupby(df["metric"])
-    q1 = g.transform("quantile", 0.25)
-    q3 = g.transform("quantile", 0.75)
-    iqr = q3 - q1
+    lo = g.transform("quantile", lower_pct)
+    hi = g.transform("quantile", upper_pct)
+    constant = (lo == hi) | ~np.isfinite(hi - lo)
 
-    # Determine high, low for 3 IQRs
-    lo, hi = q1 - k * iqr, q3 + k * iqr
-    constant = (iqr == 0) | ~np.isfinite(iqr)
-
-    # Clip to 3 IQRs
     clipped = ((oriented < lo) | (oriented > hi)) & ~constant
-
-    # Standardise scale to [0, 1]
     score = ((oriented.clip(lo, hi) - lo) / (hi - lo)).where(~constant, 0.5)
 
     return df.assign(score=score, clipped=clipped)
