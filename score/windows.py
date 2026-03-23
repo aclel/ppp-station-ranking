@@ -7,9 +7,9 @@ import pandas as pd
 
 def build_windows(df: pd.DataFrame, config: ScoreConfig) -> pd.DataFrame:
     """Takes a df of form (station, date, metric, value).
-    Returns one row for each station, each window by taking the median value.
+    Returns one row for each station, each window by taking the mean value.
     """
-    default_aggregator = "median"
+    default_aggregator = "mean"
 
     df = assign_windows(df, config.window_days, config.start_date, config.end_date)
     return (
