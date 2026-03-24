@@ -1,10 +1,16 @@
+"""These functions are used to load data from the query cache
+that was built with the query module.
+"""
+
 from pathlib import Path
 
 
 from score.config import ScoreConfig
 from utils import months_in_range
+from .windows import assign_windows
 
 import pandas as pd
+import numpy as np
 
 
 def _read_family(cache_dir: Path, family: str, year_months: list[str]) -> pd.DataFrame:
@@ -68,6 +74,39 @@ def _load_linear_combinations(cache_dir, months, needed) -> pd.DataFrame:
         var_name="metric",
         value_name="value",
     ).dropna(subset=["value"])
+
+
+def score_satellite_gaps(config) -> pd.DataFrame:
+    months = [
+        f"{y:04d}-{m:02d}"
+        for y, m in months_in_range(config.start_date, config.end_date)
+    ]
+    df = _read_family(config.cache_dir, "satellite_gaps", months).rename(
+        columns={"day": "date"}
+    )
+    df["date"] = pd.to_datetime(df["date"])
+    df = df[
+        (df["date"] >= pd.Timestamp(config.start_date))
+        & (df["date"] <= pd.Timestamp(config.end_date))
+    ]
+
+    df = assign_windows(df, config.window_days, config.start_date, config.end_date)
+
+    sums = (
+        df.groupby(["station", "window_start", "window_end"])["satellite_gaps"]
+        .sum()
+        .reset_index()
+    )
+    print(sums)
+
+    v = np.log1p(sums["satellite_gaps"].clip(lower=0))
+    if v.max() > v.min():
+        sums["score"] = 1.0 - (v - v.min()) / (v.max() - v.min())
+    else:
+        sums["score"] = 0.5
+
+    sums["metric"] = "satellite_gaps"
+    return sums[["station", "window_start", "window_end", "metric", "score"]]
 
 
 def load_metrics(config: ScoreConfig) -> pd.DataFrame:

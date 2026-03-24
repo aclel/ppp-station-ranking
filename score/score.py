@@ -1,11 +1,13 @@
 from pathlib import Path
 
 from .config import ScoreConfig
-from .data import load_metrics
+from .data import load_metrics, score_satellite_gaps
 from .windows import build_windows
 from .normalise import normalise
 from .aggregate import weighted_sum
 from .rank import rank
+
+import pandas as pd
 
 
 def run(config: ScoreConfig) -> None:
@@ -21,6 +23,13 @@ def run(config: ScoreConfig) -> None:
 
     # Takes the mean for each metric in each window for each station
     windows = build_windows(scaled, config)
+
+    # Handle satellite gaps separately because they are a sum
+    # Can't normalise and then take mean because it doesn't make sense
+    if "satellite_gaps" in config.weights:
+        gaps = score_satellite_gaps(config)
+        print(gaps)
+        windows = pd.concat([windows, gaps], ignore_index=True)
 
     # Computes the weighted sum for each window at the configured weights
     scores = weighted_sum(windows, config.weights)

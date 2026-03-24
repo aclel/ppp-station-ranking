@@ -6,6 +6,7 @@ TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
     TESTS_DIR
     / "data"
+    / "TOW2"
     / "TOW2_TOW200AUS_R_20190010000_01D_30S_MO_201900100_station_lc.parquet"
 )
 
@@ -17,6 +18,7 @@ def test_linear_combinations_one_day():
     # one (station, day)
     assert len(df) == 1
     row = df.iloc[0]
+    assert row["station"] == "TOW2"
     assert str(row["day"]) == "2019-01-01 00:00:00"
 
     assert 0 < row["mp1"] < 10

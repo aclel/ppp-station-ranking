@@ -9,6 +9,7 @@ weights:
   phase_wrms: 0.25
   code_wrms: 0.1
   amb_resets: 0.15
+  satellite_gaps: 0.1
   cn0: 0.2
   h_conv: 0.1
   v_conv: 0.1

@@ -6,6 +6,7 @@ TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
     TESTS_DIR
     / "data"
+    / "TOW2"
     / "Network_TOW200AUS_R_20190010000_01D_30S_MO_201900100_smoothed_network_residuals_smoothed.parquet"
 )
 

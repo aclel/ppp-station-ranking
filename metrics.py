@@ -28,11 +28,17 @@ METRICS: dict[str, Metric] = {
         Metric(
             "code_wrms", direction="min", units="cm", extreme_min=-500, extreme_max=500
         ),
-        Metric("h_conv", direction="min", units="min", log_transform=True),
+        Metric(
+            "h_conv",
+            direction="min",
+            units="min",
+            log_transform=True,
+        ),
         Metric("v_conv", direction="min", units="min", log_transform=True),
         Metric("uptime", direction="max", units="%"),
         Metric("active_uptime", direction="max", units="%"),
         Metric("outage_gaps", direction="min", units="count"),
+        Metric("satellite_gaps", direction="min", units="count", log_transform=True),
         Metric(
             "amb_resets",
             direction="min",

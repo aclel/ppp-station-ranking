@@ -9,6 +9,7 @@ from .ambiguity_resets import build_amb_resets
 from .observations import build_observations
 from .position import build_position
 from .linear_combinations import build_linear_combinations
+from .satellite_gaps import build_satellite_gaps
 
 from utils import year_months
 
@@ -20,6 +21,7 @@ BUILDERS = {
     "observations": build_observations,
     "position": build_position,
     "linear_combinations": build_linear_combinations,
+    "satellite_gaps": build_satellite_gaps,
 }
 
 
