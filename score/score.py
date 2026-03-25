@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .config import ScoreConfig
-from .data import load_metrics, score_satellite_gaps
+from .data import load_metrics, score_satellite_gaps, score_uptime
 from .windows import build_windows
 from .normalise import normalise
 from .aggregate import weighted_sum
@@ -28,8 +28,11 @@ def run(config: ScoreConfig) -> None:
     # Can't normalise and then take mean because it doesn't make sense
     if "satellite_gaps" in config.weights:
         gaps = score_satellite_gaps(config)
-        print(gaps)
         windows = pd.concat([windows, gaps], ignore_index=True)
+
+    if "uptime" in config.weights:
+        uptime = score_uptime(config)
+        windows = pd.concat([windows, uptime], ignore_index=True)
 
     # Computes the weighted sum for each window at the configured weights
     scores = weighted_sum(windows, config.weights)

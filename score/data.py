@@ -109,6 +109,39 @@ def score_satellite_gaps(config) -> pd.DataFrame:
     return sums[["station", "window_start", "window_end", "metric", "score"]]
 
 
+def score_uptime(config) -> pd.DataFrame:
+    months = [
+        f"{y:04d}-{m:02d}"
+        for y, m in months_in_range(config.start_date, config.end_date)
+    ]
+    df = _read_family(config.cache_dir, "observations", months).rename(
+        columns={"day": "date"}
+    )
+    df["date"] = pd.to_datetime(df["date"])
+    df = df[
+        (df["date"] >= pd.Timestamp(config.start_date))
+        & (df["date"] <= pd.Timestamp(config.end_date))
+    ]
+
+    df = assign_windows(df, config.window_days, config.start_date, config.end_date)
+
+    g = df.groupby(["station", "window_start", "window_end"])["date"]
+    out = pd.DataFrame(
+        {
+            "n_days": g.nunique(),
+            "first": g.min(),
+            "last": g.max(),
+        }
+    ).reset_index()
+
+    # Only count active window in case station started/stopped observing during period
+    span = (out["last"] - out["first"]).dt.days + 1
+    out["score"] = out["n_days"] / span  # already in [0, 1], higher = better
+    out["metric"] = "uptime"
+
+    return out[["station", "window_start", "window_end", "metric", "score"]]
+
+
 def load_metrics(config: ScoreConfig) -> pd.DataFrame:
     needed = set(config.weights)
     months = [
