@@ -84,6 +84,7 @@ def score_satellite_gaps(config) -> pd.DataFrame:
     df = _read_family(config.cache_dir, "satellite_gaps", months).rename(
         columns={"day": "date"}
     )
+
     df["date"] = pd.to_datetime(df["date"])
     df = df[
         (df["date"] >= pd.Timestamp(config.start_date))
@@ -97,7 +98,22 @@ def score_satellite_gaps(config) -> pd.DataFrame:
         .sum()
         .reset_index()
     )
-    print(sums)
+
+    obs = _read_family(config.cache_dir, "observations", months).rename(
+        columns={"day": "date"}
+    )
+    obs["date"] = pd.to_datetime(obs["date"])
+    obs = obs[
+        (obs["date"] >= pd.Timestamp(config.start_date))
+        & (obs["date"] <= pd.Timestamp(config.end_date))
+    ]
+    obs = assign_windows(obs, config.window_days, config.start_date, config.end_date)
+    universe = obs[["station", "window_start", "window_end"]].drop_duplicates()
+
+    sums = universe.merge(
+        sums, on=["station", "window_start", "window_end"], how="left"
+    )
+    sums["satellite_gaps"] = sums["satellite_gaps"].fillna(0)
 
     v = np.log1p(sums["satellite_gaps"].clip(lower=0))
     if v.max() > v.min():

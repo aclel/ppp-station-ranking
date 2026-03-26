@@ -12,6 +12,9 @@ def weighted_sum(windows: pd.DataFrame, weights: dict[str, float]) -> pd.DataFra
         values="score",
     )
 
+    # Only keep rows that have values for all columns
+    wide = wide.dropna()
+
     # Compute additive weighted sum
     wide["score"] = (wide * w).sum(axis=1, skipna=False)
     return wide.reset_index()
