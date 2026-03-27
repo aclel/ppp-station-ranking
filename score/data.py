@@ -151,8 +151,8 @@ def score_uptime(config) -> pd.DataFrame:
     ).reset_index()
 
     # Only count active window in case station started/stopped observing during period
-    span = (out["last"] - out["first"]).dt.days + 1
-    out["score"] = out["n_days"] / span  # already in [0, 1], higher = better
+    span = (out["window_end"] - out["window_start"]).dt.days + 1
+    out["score"] = out["n_days"] / span
     out["metric"] = "uptime"
 
     return out[["station", "window_start", "window_end", "metric", "score"]]
