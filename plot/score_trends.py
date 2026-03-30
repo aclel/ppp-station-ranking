@@ -9,17 +9,25 @@ def make_trends(ranking_df: pd.DataFrame, metric_cols: list[str]) -> go.Figure:
     df["window_end"] = pd.to_datetime(df["window_end"])
     df["window_mid"] = df["window_start"] + (df["window_end"] - df["window_start"]) / 2
 
+    all_windows = df[["window_start", "window_end", "window_mid"]].drop_duplicates()
+
     fig = go.Figure()
     for station, sub in df.groupby("station"):
-        sub = sub.sort_values("window_mid")
+        sub = all_windows.merge(
+            sub, on=["window_start", "window_end", "window_mid"], how="left"
+        ).sort_values("window_mid")
         hover = sub.apply(
             lambda r: (
-                f"<b>{r['station']}</b><br>"
-                f"Window: {r['window_start'].date()} → {r['window_end'].date()}<br>"
-                f"Score: {r['score']:.3f}  •  Rank: {int(r['rank'])}<br>"
-                + "<br>".join(
-                    f"{m}: {r[m]:.2f}" if pd.notna(r[m]) else f"{m}: —"
-                    for m in metric_cols
+                ""
+                if pd.isna(r["score"])
+                else (
+                    f"<b>{r['station']}</b><br>"
+                    f"Window: {r['window_start'].date()} to {r['window_end'].date()}<br>"
+                    f"Score: {r['score']:.3f}  •  Rank: {int(r['rank'])}<br>"
+                    + "<br>".join(
+                        f"{m}: {r[m]:.2f}" if pd.notna(r[m]) else f"{m}: -"
+                        for m in metric_cols
+                    )
                 )
             ),
             axis=1,
