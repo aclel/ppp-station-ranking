@@ -14,7 +14,6 @@ TOW2_FILE = str(
 def test_linear_combinations_one_day():
     conn = make_connection()
     df = _linear_combinations_sql([TOW2_FILE], conn)
-    print(df)
     # one (station, day)
     assert len(df) == 1
     row = df.iloc[0]

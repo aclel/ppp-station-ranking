@@ -36,7 +36,6 @@ METRICS: dict[str, Metric] = {
         ),
         Metric("v_conv", direction="min", units="min", log_transform=True),
         Metric("uptime", direction="max", units="%"),
-        Metric("outage_gaps", direction="min", units="count"),
         Metric("satellite_gaps", direction="min", units="count", log_transform=True),
         Metric(
             "amb_resets",
