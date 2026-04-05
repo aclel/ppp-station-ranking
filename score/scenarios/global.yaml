@@ -2,21 +2,21 @@ name: global
 output_dir: results/global
 start_date: "2019-01-01"
 end_date: "2025-11-15"
-window_days: 5
+window_days: null
 cache_dir: cache/query
                                                                                                                                                                                                                
 weights:
-  phase_wrms: 0.25
-  code_wrms: 0.1
-  satellite_gaps: 0.1
-  uptime: 0.1
+  phase_wrms: 0.3
+  code_wrms: 0.10
+  satellite_gaps: 0.075
+  uptime: 0.075
   amb_resets: 0.15
-  cn0: 0.2
   h_conv: 0.1
   v_conv: 0.1
-  mp1: 0.0125
-  mp2: 0.0125
-  mp5: 0.0125
+  cn0: 0.05
+  mp1: 0.018
+  mp2: 0.016
+  mp5: 0.016
   
 variants:
   - {name: additive,  aggregator: weighted_sum}
