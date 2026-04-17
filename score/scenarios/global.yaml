@@ -19,4 +19,5 @@ weights:
   mp5: 0.016
   
 variants:
-  - {name: additive,  aggregator: weighted_sum}
+    - {name: additive, aggregator: weighted_sum}
+    - {name: topsis,   aggregator: topsis}

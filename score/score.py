@@ -4,7 +4,7 @@ from .config import ScoreConfig
 from .data import load_metrics, score_satellite_gaps, score_uptime
 from .windows import build_windows
 from .normalise import normalise
-from .aggregate import weighted_sum
+from .aggregate import AGGREGATORS
 from .rank import rank
 
 import pandas as pd
@@ -34,8 +34,12 @@ def run(config: ScoreConfig) -> None:
         uptime = score_uptime(config)
         windows = pd.concat([windows, uptime], ignore_index=True)
 
-    # Computes the weighted sum for each window at the configured weights
-    scores = weighted_sum(windows, config.weights)
+    # For each scoring variant (weighted sum, TOPSIS etc)
+    for variant in config.variants:
+        aggregator = AGGREGATORS[variant.aggregator]
 
-    # Ranks using the generated scores
-    ranks = rank(scores, config)
+        # Computes the weighted sum for each window at the configured weights
+        scores = aggregator(windows, config.weights)
+
+        # Ranks using the generated scores
+        rank(scores, config, variant)
