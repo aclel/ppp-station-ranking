@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .config import load_config
+from config import load_config
 from .score import run
 
 import click

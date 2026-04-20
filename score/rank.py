@@ -1,4 +1,4 @@
-from .config import ScoreConfig, Variant
+from config import ScoreConfig, Variant
 
 import pandas as pd
 

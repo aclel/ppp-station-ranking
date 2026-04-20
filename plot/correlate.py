@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -5,6 +7,7 @@ import plotly.graph_objects as go
 def make_correlation_heatmap(
     ranking_df: pd.DataFrame,
     metric_cols: list[str],
+    plots_dir: Path,
     method: str = "spearman",
 ) -> go.Figure:
     """Build a correlation heatmap between normalised metrics"""
@@ -32,5 +35,7 @@ def make_correlation_heatmap(
         xaxis=dict(tickangle=-45),
     )
     fig.update_yaxes(autorange="reversed")
-    fig.write_html("correlation.html", include_plotlyjs="cdn", full_html=True)
+    fig.write_html(
+        plots_dir / "correlation.html", include_plotlyjs="cdn", full_html=True
+    )
     return fig

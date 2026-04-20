@@ -1,8 +1,11 @@
 import pandas as pd
 import plotly.graph_objects as go
+from pathlib import Path
 
 
-def make_trends(ranking_df: pd.DataFrame, metric_cols: list[str]) -> go.Figure:
+def make_trends(
+    ranking_df: pd.DataFrame, metric_cols: list[str], plots_dir: Path
+) -> go.Figure:
     """Plots station scores (not ranks) over time"""
     df = ranking_df.copy()
     df["window_start"] = pd.to_datetime(df["window_start"])
@@ -52,5 +55,5 @@ def make_trends(ranking_df: pd.DataFrame, metric_cols: list[str]) -> go.Figure:
         legend=dict(itemsizing="constant"),
         hovermode="closest",
     )
-    fig.write_html("score_trends.html", include_plotlyjs="cdn")
+    fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
     return fig

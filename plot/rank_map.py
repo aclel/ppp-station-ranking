@@ -1,12 +1,14 @@
 from .utils import inclination_contours
-
+from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 
 IGRF_CSV = "data/igrfgridData.csv"
 
 
-def make_map(ranking_df, metric_cols, contours=None, colorscale="viridis_r"):
+def make_map(
+    ranking_df, metric_cols, plots_dir: Path, contours=None, colorscale="viridis_r"
+):
     """Builds a map showing rank with colour"""
     fig = go.Figure()
 
@@ -80,5 +82,7 @@ def make_map(ranking_df, metric_cols, contours=None, colorscale="viridis_r"):
         title="Station Ranks",
         title_x=0.5,  # centred
     )
-    fig.write_html("ranking_map.html", include_plotlyjs="cdn", full_html=True)
+    fig.write_html(
+        plots_dir / "ranking_map.html", include_plotlyjs="cdn", full_html=True
+    )
     return fig

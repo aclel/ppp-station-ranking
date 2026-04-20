@@ -1,6 +1,6 @@
 from datetime import date
 
-from .config import ScoreConfig
+from config import ScoreConfig
 
 import pandas as pd
 

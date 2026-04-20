@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .config import ScoreConfig
+from config import ScoreConfig
 from .data import load_metrics, score_satellite_gaps, score_uptime
 from .windows import build_windows
 from .normalise import normalise

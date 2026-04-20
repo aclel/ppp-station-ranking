@@ -5,7 +5,7 @@ that was built with the query module.
 from pathlib import Path
 
 
-from score.config import ScoreConfig
+from config import ScoreConfig
 from utils import months_in_range
 from .windows import assign_windows
 
