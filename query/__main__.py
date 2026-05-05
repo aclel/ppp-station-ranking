@@ -48,7 +48,10 @@ def main(argv=None) -> int:
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
     args = parse_args(argv)
+    import time
+
     builder = BUILDERS[args.family]
+
     conn = make_connection(memory_limit=args.mem, threads=args.threads)
 
     # Build the query cache for each month for the given family
@@ -59,8 +62,22 @@ def main(argv=None) -> int:
             continue
 
         year, month = (int(x) for x in year_month.split("-"))
+        t_build0 = time.perf_counter()
         df = builder(year, month, args.raw_root, conn)
+        t_build1 = time.perf_counter()
+        n = len(df)
+        t_build2 = time.perf_counter()
         write_month(df, args.family, year_month, args.out_root)
+        t_build3 = time.perf_counter()
+        log.info(
+            "%s %s: build=%.2fs mat=%.2fs write=%.2fs rows=%d",
+            args.family,
+            year_month,
+            t_build1 - t_build0,
+            t_build2 - t_build1,
+            t_build3 - t_build2,
+            n,
+        )
         log.info("%s %s: %d rows", args.family, year_month, len(df))
 
     return 0
