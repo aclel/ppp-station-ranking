@@ -56,33 +56,21 @@ def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.Data
         CASE WHEN meas = 'PHAS_MEAS' THEN postfit * 1000.0   -- mm
             WHEN meas = 'CODE_MEAS' THEN postfit * 100.0    -- cm                                                                                 
         END AS res                          
-        FROM read_parquet({files}, union_by_name=true)
+        FROM read_parquet({files})
         WHERE sigma > 0 AND postfit IS NOT NULL
     )
     SELECT               
-        station, day,                                                                                                                                
-                        
-        -- phase                                                                                                                                     
-        SQRT(              
-        SUM(CASE WHEN meas='PHAS_MEAS' AND res BETWEEN ? AND ?
-                THEN res*res / (sigma*sigma) END)
-        / NULLIF(SUM(CASE WHEN meas='PHAS_MEAS' AND res BETWEEN ? AND ?
-                            THEN 1.0 / (sigma*sigma) END), 0)                                                                                        
-        ) AS phase_wrms,                          
-        SUM(CASE WHEN meas='PHAS_MEAS' THEN 1 ELSE 0 END) AS phase_n_obs,                                                                            
-        SUM(CASE WHEN meas='PHAS_MEAS' AND (res < ? OR res > ?)
-                THEN 1 ELSE 0 END) AS phase_n_outliers,                                                                                             
-                                                
+        station, day,
+        -- phase
+        SQRT(
+            SUM(res*res / (sigma*sigma)) FILTER (WHERE meas='PHAS_MEAS' AND res BETWEEN ? AND ?)
+            / NULLIF(SUM(1.0 / (sigma*sigma)) FILTER (WHERE meas='PHAS_MEAS' AND res BETWEEN ? AND ?), 0)
+        ) AS phase_wrms,
         -- code                                                                                                                                      
-        SQRT(         
-        SUM(CASE WHEN meas='CODE_MEAS' AND res BETWEEN ? AND ?                                                                                     
-                THEN res*res / (sigma*sigma) END)
-        / NULLIF(SUM(CASE WHEN meas='CODE_MEAS' AND res BETWEEN ? AND ?                                                                            
-                            THEN 1.0 / (sigma*sigma) END), 0)
-        ) AS code_wrms,                                                                                                                              
-        SUM(CASE WHEN meas='CODE_MEAS' THEN 1 ELSE 0 END) AS code_n_obs,
-        SUM(CASE WHEN meas='CODE_MEAS' AND (res < ? OR res > ?)                                                                                      
-                THEN 1 ELSE 0 END) AS code_n_outliers                                                                                                                                        
+        SQRT(
+            SUM(res*res / (sigma*sigma)) FILTER (WHERE meas='CODE_MEAS' AND res BETWEEN ? AND ?)
+            / NULLIF(SUM(1.0 / (sigma*sigma)) FILTER (WHERE meas='CODE_MEAS' AND res BETWEEN ? AND ?), 0)
+        ) AS code_wrms
     FROM considered                                                                                                                                
     GROUP BY station, day                                                                                                                          
     ORDER BY station, day
@@ -95,10 +83,6 @@ def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.Data
             phase_hi,
             phase_low,
             phase_hi,
-            phase_low,
-            phase_hi,
-            code_low,
-            code_hi,
             code_low,
             code_hi,
             code_low,
@@ -114,10 +98,6 @@ def _empty_frame() -> pd.DataFrame:
             "station",
             "day",
             "phase_wrms",
-            "phase_n_obs",
-            "phase_n_outliers",
             "code_wrms",
-            "code_n_obs",
-            "code_n_outliers",
         ]
     )

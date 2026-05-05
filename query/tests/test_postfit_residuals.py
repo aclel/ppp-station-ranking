@@ -26,11 +26,3 @@ def test_residuals_one_station_one_day():
 
     # code_wrms in cm: healthy station should be 5–50 cm
     assert -100 < row["code_wrms"] < 100.0
-
-    # Check all rows are considered
-    assert row["phase_n_obs"] == 86255
-    assert row["code_n_obs"] == 86255
-
-    # outlier rate sanity: less than 1% for a healthy station
-    assert 0 <= row["phase_n_outliers"] / row["phase_n_obs"] < 0.01
-    assert 0 <= row["code_n_outliers"] / row["code_n_obs"] < 0.01
