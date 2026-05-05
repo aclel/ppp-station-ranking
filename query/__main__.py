@@ -4,25 +4,11 @@ import sys
 from pathlib import Path
 
 from .base import make_connection, write_month
-from .postfit_residuals import build_residuals
-from .ambiguity_resets import build_amb_resets
-from .observations import build_observations
-from .position import build_position
-from .linear_combinations import build_linear_combinations
-from .satellite_gaps import build_satellite_gaps
+from .builders import BUILDERS
 
 from utils import year_months
 
 log = logging.getLogger("query")
-
-BUILDERS = {
-    "postfit_residuals": build_residuals,
-    "amb_resets": build_amb_resets,
-    "observations": build_observations,
-    "position": build_position,
-    "linear_combinations": build_linear_combinations,
-    "satellite_gaps": build_satellite_gaps,
-}
 
 
 def parse_args(argv=None):

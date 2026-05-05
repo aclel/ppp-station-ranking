@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from query.base import make_connection
-from query.ambiguity_resets import _amb_resets_sql
+from query.ambiguity_resets import amb_resets_sql
 
 TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
@@ -14,7 +14,7 @@ TOW2_FILE = str(
 
 def test_amb_resets_one_station_one_day():
     conn = make_connection()
-    df = _amb_resets_sql([TOW2_FILE], conn)
+    df = amb_resets_sql([TOW2_FILE], conn)
 
     assert len(df) == 1
     row = df.iloc[0]

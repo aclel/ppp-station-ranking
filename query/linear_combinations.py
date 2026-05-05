@@ -1,31 +1,17 @@
-import duckdb
 import pandas as pd
-from pathlib import Path
 
 from metrics import extremes
-from query.base import raw_files, filter_readable, sql_file_list
+
 
 PATTERN = "*_station_lc.parquet"
 
 LC_COMBOS = ("mp1", "mp2", "mp5", "mw12", "mw15", "mw25")
 
 
-def build_linear_combinations(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(files)
-    files = sql_file_list(files)
-    return _linear_combinations_sql(files, conn)
-
-
-def _linear_combinations_sql(files: list[str], conn) -> pd.DataFrame:
+def linear_combinations_sql(files: list[str], conn) -> pd.DataFrame:
     """Queries RMS for each linear combination metric from the Ginan preprocessor"""
     if not files:
-        return _empty_frame()
-
-    if not files:
-        return _empty_frame()
+        return empty_frame()
 
     extremes_rows = ", ".join(
         f"('{c}', {extremes(c)[0]}, {extremes(c)[1]})" for c in LC_COMBOS
@@ -57,7 +43,7 @@ def _linear_combinations_sql(files: list[str], conn) -> pd.DataFrame:
     return conn.execute(sql).df()
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(
         columns=[
             "station",

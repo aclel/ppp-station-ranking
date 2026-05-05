@@ -1,6 +1,6 @@
 from pathlib import Path
 from query.base import make_connection
-from query.position import _position_sql
+from query.position import position_sql
 
 TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
@@ -10,7 +10,7 @@ TOW2_FILE = str(
 
 def test_convergence_time():
     conn = make_connection()
-    df = _position_sql([TOW2_FILE], conn)
+    df = position_sql([TOW2_FILE], conn)
 
     # one (station, day)
     assert len(df) == 1

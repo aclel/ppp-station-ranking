@@ -1,6 +1,6 @@
 from pathlib import Path
 from query.base import make_connection
-from query.postfit_residuals import _residuals_sql
+from query.postfit_residuals import residuals_sql
 
 TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
@@ -13,7 +13,7 @@ TOW2_FILE = str(
 
 def test_residuals_one_station_one_day():
     conn = make_connection()
-    df = _residuals_sql([TOW2_FILE], conn)
+    df = residuals_sql([TOW2_FILE], conn)
 
     # one (station, day)
     assert len(df) == 1

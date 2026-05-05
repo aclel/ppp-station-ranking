@@ -1,48 +1,12 @@
-import time
-import logging
-
-from pathlib import Path
-from .base import raw_files, filter_readable, sql_file_list
 from metrics import extremes
 
 import duckdb
 import pandas as pd
 
-log = logging.getLogger(__name__)
-
-
 PATTERN = "*_smoothed_network_residuals_smoothed.parquet"
 
 
-def build_residuals(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    t0 = time.perf_counter()
-    files = raw_files(year, month, raw_root, PATTERN)
-    t1 = time.perf_counter()
-
-    files = filter_readable(files)
-    t2 = time.perf_counter()
-
-    n_files = len(files)
-    files = sql_file_list(files)
-    if not files:
-        return _empty_frame()
-    t3 = time.perf_counter()
-
-    log.info(
-        "postfit_residuals %04d-%02d: glob=%.2fs readable=%.2fs sql=%.2fs files=%d",
-        year,
-        month,
-        t1 - t0,
-        t2 - t1,
-        t3 - t2,
-        n_files,
-    )
-    return _residuals_sql(files, conn)
-
-
-def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
+def residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     phase_low, phase_hi = extremes("phase_wrms")
     code_low, code_hi = extremes("code_wrms")
 
@@ -92,7 +56,7 @@ def _residuals_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.Data
     return df
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(
         columns=[
             "station",

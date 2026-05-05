@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 import os
 from concurrent.futures import ThreadPoolExecutor
+from typing import Callable
 
 import duckdb
 import pyarrow.parquet as pq
@@ -76,3 +77,23 @@ def sql_file_list(files: list[str]) -> str:
     """DuckDB SQL list literal for a list of file paths."""
     inner = ", ".join(f"'{f}'" for f in files)
     return f"[{inner}]"
+
+
+def build_df(
+    sql_fn: Callable[[str, duckdb.DuckDBPyConnection], pd.DataFrame],
+    pattern: str,
+    empty_frame: Callable[[], pd.DataFrame],
+    year: int,
+    month: int,
+    raw_root: Path,
+    conn: duckdb.DuckDBPyConnection,
+) -> pd.DataFrame:
+    files = raw_files(year, month, raw_root, pattern)
+    if not files:
+        return empty_frame()
+    try:
+        return sql_fn(sql_file_list(files), conn)
+    except (duckdb.IOException, duckdb.InvalidInputException) as e:
+        log.warning("query failed (%s); pruning bad files and retrying", e)
+        good = filter_readable(files)
+        return sql_fn(sql_file_list(good), conn) if good else empty_frame()

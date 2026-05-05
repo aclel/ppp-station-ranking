@@ -1,6 +1,6 @@
 from pathlib import Path
 from query.base import make_connection
-from query.satellite_gaps import _satellite_gaps_sql
+from query.satellite_gaps import satellite_gaps_sql
 
 TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
@@ -13,7 +13,7 @@ TOW2_FILE = str(
 
 def test_satellite_gaps_one_day():
     conn = make_connection()
-    df = _satellite_gaps_sql([TOW2_FILE], conn)
+    df = satellite_gaps_sql([TOW2_FILE], conn)
 
     # At most one row (one station-day). Could be zero rows if TOW2 had no
     # gaps that day, then the metric is "absent" and the loader fills 0.

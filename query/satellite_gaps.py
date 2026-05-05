@@ -1,27 +1,15 @@
-import duckdb
 import pandas as pd
-from pathlib import Path
 
-from query.base import raw_files, filter_readable, sql_file_list
 
 PATTERN = "*station_observations.parquet"
 
 
-def build_satellite_gaps(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(files)
-    files = sql_file_list(files)
-    return _satellite_gaps_sql(files, conn)
-
-
-def _satellite_gaps_sql(files: list[str], conn) -> pd.DataFrame:
+def satellite_gaps_sql(files: list[str], conn) -> pd.DataFrame:
     """Queries the number of 10 minute gaps in obervations for a given satellite. Identifies stations that
     have tracking difficulties.
     """
     if not files:
-        return _empty_frame()
+        return empty_frame()
 
     sql = f"""  
         WITH epochs AS (
@@ -60,5 +48,5 @@ def _satellite_gaps_sql(files: list[str], conn) -> pd.DataFrame:
     return conn.execute(sql).df()
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=["station", "day", "satellite_gaps"])

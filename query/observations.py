@@ -1,26 +1,14 @@
-import duckdb
 import pandas as pd
-from pathlib import Path
-
 from metrics import extremes
-from query.base import raw_files, filter_readable, sql_file_list
+
 
 PATTERN = "*station_observations.parquet"
 
 
-def build_observations(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(files)
-    files = sql_file_list(files)
-    return _observations_sql(files, conn)
-
-
-def _observations_sql(files: list[str], conn) -> pd.DataFrame:
+def observations_sql(files: list[str], conn) -> pd.DataFrame:
     """Queries average CN0"""
     if not files:
-        return _empty_frame()
+        return empty_frame()
 
     cn0_low, cn0_hi = extremes("cn0")
 
@@ -40,5 +28,5 @@ def _observations_sql(files: list[str], conn) -> pd.DataFrame:
     return conn.execute(sql, [cn0_low, cn0_hi]).df()
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=["station", "day", "cn0"])

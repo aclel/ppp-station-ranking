@@ -1,9 +1,5 @@
-from pathlib import Path
-from .base import raw_files, filter_readable, sql_file_list
-
 import duckdb
 import pandas as pd
-
 
 PATTERN = "*rnx_pos.parquet"
 
@@ -12,19 +8,10 @@ THRESH_H = 0.1
 THRESH_V = 0.1
 
 
-def build_position(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(files)
-    files = sql_file_list(files)
+def position_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     if not files:
-        return _empty_frame()
+        return empty_frame()
 
-    return _position_sql(files, conn)
-
-
-def _position_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     sql = f"""
         WITH raw AS (                                                                                                               
             SELECT                                                                                                                  
@@ -58,5 +45,5 @@ def _position_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataF
     return df
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=["station", "day", "h_conv", "v_conv"])

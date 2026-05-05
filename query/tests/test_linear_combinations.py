@@ -1,6 +1,6 @@
 from pathlib import Path
 from query.base import make_connection
-from query.linear_combinations import _linear_combinations_sql
+from query.linear_combinations import linear_combinations_sql
 
 TESTS_DIR = Path(__file__).parent
 TOW2_FILE = str(
@@ -13,7 +13,7 @@ TOW2_FILE = str(
 
 def test_linear_combinations_one_day():
     conn = make_connection()
-    df = _linear_combinations_sql([TOW2_FILE], conn)
+    df = linear_combinations_sql([TOW2_FILE], conn)
     # one (station, day)
     assert len(df) == 1
     row = df.iloc[0]

@@ -1,28 +1,15 @@
-import duckdb
 import pandas as pd
-from pathlib import Path
-
-from query.base import raw_files, filter_readable, sql_file_list
 
 PATTERN = "*_network_ambiguity_resets.parquet"
 
 
-def build_amb_resets(
-    year: int, month: int, raw_root: Path, conn: duckdb.DuckDBPyConnection
-) -> pd.DataFrame:
-    files = raw_files(year, month, raw_root, PATTERN)
-    files = filter_readable(files)
-    files = sql_file_list(files)
-    return _amb_resets_sql(files, conn)
-
-
-def _amb_resets_sql(files: list[str], conn) -> pd.DataFrame:
+def amb_resets_sql(files: list[str], conn) -> pd.DataFrame:
     """Queries unique ambiguity resets on one satellite, one epoch.
     This does DISTINCT because there are likely multiple reasons
     triggered (SCDIA, MW, GF etc) for one satellite, epoch.
     """
     if not files:
-        return _empty_frame()
+        return empty_frame()
 
     sql = f"""  
         WITH dedup AS (                                                                                                                        
@@ -41,5 +28,5 @@ def _amb_resets_sql(files: list[str], conn) -> pd.DataFrame:
     return conn.execute(sql).df()
 
 
-def _empty_frame() -> pd.DataFrame:
+def empty_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=["station", "day", "amb_resets"])
