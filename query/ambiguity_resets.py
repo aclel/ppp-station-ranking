@@ -18,7 +18,7 @@ def amb_resets_sql(files: list[str], conn) -> pd.DataFrame:
                 CAST(datetime AS DATE)      AS day,
                 CAST(datetime AS TIMESTAMP) AS epoch,                                                                                          
                 UPPER(TRIM(sat))            AS sat
-            FROM read_parquet({files}, union_by_name=true, hive_partitioning=false)                                                                                        
+            FROM read_parquet({files})
         )       
         SELECT recv AS station, day, COUNT(*) AS amb_resets                                                                                    
         FROM dedup

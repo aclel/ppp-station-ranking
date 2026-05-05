@@ -28,7 +28,7 @@ def linear_combinations_sql(files: list[str], conn) -> pd.DataFrame:
                 CAST(r.datetime AS DATE) AS day,                                                                            
                 r.combo_label,
                 SQRT(AVG(r.value * r.value)) AS rms                                                                         
-            FROM read_parquet({files}, union_by_name=true, filename=true, hive_partitioning=false) r                        
+            FROM read_parquet({files}, filename=true) r
             JOIN bounds b USING (combo_label)
             WHERE r.value IS NOT NULL                                                                                       
             AND r.value BETWEEN b.lo AND b.hi                                                                             

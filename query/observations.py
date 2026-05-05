@@ -17,7 +17,7 @@ def observations_sql(files: list[str], conn) -> pd.DataFrame:
             UPPER(LEFT(regexp_extract(filename, '/([A-Z0-9]{{4}})/', 1), 4)) AS station,                                              
             CAST(datetime AS DATE) AS day,                                                                                          
             AVG(snr) AS cn0                                                                                                    
-        FROM read_parquet({files}, union_by_name=true, filename=true, hive_partitioning=false)                                         
+        FROM read_parquet({files}, filename=true)
         WHERE status = 'OBSERVED'                                                                                                   
             AND elevation > 10                                                                                                        
             AND snr IS NOT NULL

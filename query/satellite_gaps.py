@@ -18,7 +18,7 @@ def satellite_gaps_sql(files: list[str], conn) -> pd.DataFrame:
                 sat,
                 datetime,
                 MIN(elevation) AS elevation         -- same value across signals                                                                                                            
-            FROM read_parquet({files}, union_by_name=true, filename=true, hive_partitioning=false)                                                                                                                  
+            FROM read_parquet({files}, filename=true)
             WHERE status = 'OBSERVED' AND elevation > 10                                                                                                                                                            
             GROUP BY station, sat, datetime                                                                                                                                                                         
         ),                                                                                                                                                                                                          

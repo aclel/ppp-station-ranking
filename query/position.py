@@ -20,7 +20,7 @@ def position_sql(files: list[str], conn: duckdb.DuckDBPyConnection) -> pd.DataFr
                 CAST(datetime AS TIMESTAMP) AS ts,                                                                                  
                 SQRT(dN*dN + dE*dE) AS errH,                                                                                        
                 ABS(dU)             AS errV                                                                                         
-            FROM read_parquet({files}, union_by_name=true, filename=true, hive_partitioning=false)                                     
+            FROM read_parquet({files}, filename=true)
         ),                                                                                                                          
         elapsed AS (                                                                                                                
             SELECT                                                                                                                  
