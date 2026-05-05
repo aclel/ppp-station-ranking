@@ -64,7 +64,6 @@ def main(argv=None) -> int:
             t_build3 - t_build2,
             n,
         )
-        log.info("%s %s: %d rows", args.family, year_month, len(df))
 
     return 0
 
