@@ -33,6 +33,13 @@ def parse_args(argv=None):
     p.add_argument("--raw-root", type=Path, default=Path("/data/parquet"))
     p.add_argument("--out-root", type=Path, default=Path("cache/query"))
     p.add_argument("--skip-existing", action="store_true")
+    p.add_argument("--threads", type=int, required=True, help="DuckDB thread count")
+    p.add_argument(
+        "--mem",
+        default=None,
+        required=True,
+        help="DuckDB memory limit, e.g. '64GB'",
+    )
     return p.parse_args(argv)
 
 
@@ -42,7 +49,7 @@ def main(argv=None) -> int:
     )
     args = parse_args(argv)
     builder = BUILDERS[args.family]
-    conn = make_connection()
+    conn = make_connection(memory_limit=args.mem, threads=args.threads)
 
     # Build the query cache for each month for the given family
     for year_month in year_months(args.start, args.end):
