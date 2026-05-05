@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import numpy as np
+
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -12,8 +14,10 @@ def make_correlation_heatmap(
 ) -> go.Figure:
     """Build a correlation heatmap between normalised metrics"""
     corr = ranking_df[metric_cols].corr(method=method)
-    n = len(ranking_df)
+    mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
+    corr = corr.mask(mask)
 
+    text = corr.round(2).astype(object).where(corr.notna(), "")
     fig = go.Figure(
         go.Heatmap(
             z=corr.values,
@@ -23,7 +27,7 @@ def make_correlation_heatmap(
             zmax=1,
             zmid=0,
             colorscale="RdBu_r",
-            text=corr.round(2).values,
+            text=text,
             texttemplate="%{text}",
             colorbar=dict(title="ρ"),
         )
