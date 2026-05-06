@@ -27,6 +27,7 @@ def plot(config_path: Path) -> None:
 
     log.info("Building plots")
     config = load_config(config_path)
+    config_label = config_path.name
 
     stations_csv = "data/igs_stations.csv"
     stations = pd.read_csv(stations_csv)
@@ -59,10 +60,34 @@ def plot(config_path: Path) -> None:
 
         plots_dir = variant_dir
         plots_dir.mkdir(parents=True, exist_ok=True)
-        make_map(ranks, metric_cols, variant.name, plots_dir)
-        make_trends(ranks, metric_cols, plots_dir)
-        make_correlation_heatmap(ranks, metric_cols, plots_dir)
-        make_agreement_map(ranks, metric_cols, plots_dir, stations)
+        make_map(
+            ranks,
+            metric_cols,
+            variant.name,
+            plots_dir,
+            config_label=config_label,
+            weights=config.weights,
+        )
+        make_trends(
+            ranks,
+            metric_cols,
+            plots_dir,
+            config_label=config_label,
+            weights=config.weights,
+        )
+        make_correlation_heatmap(
+            ranks,
+            metric_cols,
+            plots_dir,
+        )
+        make_agreement_map(
+            ranks,
+            metric_cols,
+            plots_dir,
+            stations,
+            config_label=config_label,
+            weights=config.weights,
+        )
 
 
 if __name__ == "__main__":

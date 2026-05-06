@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .utils import add_inclination_contours, add_metric_diffs
+from .utils import add_inclination_contours, add_metric_diffs, format_config_footer
 from pathlib import Path
 import plotly.graph_objects as go
 from utils import load_igc20_core
@@ -42,7 +42,12 @@ def compare_to_igc20(igc20: pd.DataFrame, ranking: pd.DataFrame) -> pd.DataFrame
 
 
 def make_agreement_map(
-    ranking_df: pd.DataFrame, metric_cols: pd.DataFrame, plots_dir: Path, stations
+    ranking_df: pd.DataFrame,
+    metric_cols: pd.DataFrame,
+    plots_dir: Path,
+    stations,
+    config_label: str,
+    weights: dict[str, float],
 ):
     """Map of per-cluster agreement with the IGc20 core network."""
     igc20 = load_igc20_core("data/IGc20_core.txt")
@@ -160,6 +165,7 @@ def make_agreement_map(
         title=(
             f"Agreement with IGc20 core network"
             f"<br><sub>Green = agree ({n_agree}), Red = disagree ({n_disagree})</sub>"
+            f"<br>{format_config_footer(config_label, weights)}"
         ),
         title_x=0.5,
     )

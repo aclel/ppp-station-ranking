@@ -2,9 +2,15 @@ import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
 
+from .utils import format_config_footer
+
 
 def make_trends(
-    ranking_df: pd.DataFrame, metric_cols: list[str], plots_dir: Path
+    ranking_df: pd.DataFrame,
+    metric_cols: list[str],
+    plots_dir: Path,
+    config_label: str,
+    weights: dict[str, float],
 ) -> go.Figure:
     """Plots station scores (not ranks) over time"""
     df = ranking_df.copy()
@@ -50,7 +56,7 @@ def make_trends(
     fig.update_yaxes(title="Score")
     fig.update_xaxes(title="Time")
     fig.update_layout(
-        title="Station score over time",
+        title=f"Station score over time<br>{format_config_footer(config_label, weights)}",
         height=700,
         legend=dict(itemsizing="constant"),
         hovermode="closest",
