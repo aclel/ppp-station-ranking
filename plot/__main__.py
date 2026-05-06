@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from .rank_map import make_map
 from .score_trends import make_trends
@@ -9,6 +10,8 @@ from config import load_config
 import pandas as pd
 import click
 
+log = logging.getLogger("plot")
+
 
 @click.command()
 @click.option(
@@ -18,6 +21,11 @@ import click
     required=True,
 )
 def plot(config_path: Path) -> None:
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+    )
+
+    log.info("Building plots")
     config = load_config(config_path)
 
     stations_csv = "data/igs_stations.csv"
@@ -26,12 +34,14 @@ def plot(config_path: Path) -> None:
 
     for variant in config.variants:
         variant_dir = config.output_dir / variant.name
+        log.info(f"Building plots for {variant.name}")
         ranks = pd.read_csv(variant_dir / "ranking.csv").merge(
             stations[["station", "Latitude", "Longitude"]],
             on="station",
             how="left",
         )
 
+        log.info("Building metric cols")
         metric_cols = [
             c
             for c in ranks.columns
