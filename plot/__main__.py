@@ -57,6 +57,9 @@ def plot(config_path: Path) -> None:
                 "Longitude",
             }
         ]
+        metric_cols.sort(
+            key=lambda m: config.weights.get(m, float("-inf")), reverse=True
+        )
 
         plots_dir = variant_dir
         plots_dir.mkdir(parents=True, exist_ok=True)

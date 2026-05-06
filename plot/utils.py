@@ -98,5 +98,6 @@ def add_metric_diffs(compare_df: pd.DataFrame, metric_cols: list[str]) -> pd.Dat
 
 def format_config_footer(config_label: str, weights: dict[str, float]) -> str:
     """Returns an HTML subtitle line: 'Config: ppp.yaml | weights: a=0.3, b=0.7'"""
-    parts = " ".join(f"{m}={w:g}" for m, w in weights.items())
+    sorted_weights = sorted(weights.items(), key=lambda kv: kv[1], reverse=True)
+    parts = " ".join(f"{m}={w:g}" for m, w in sorted_weights)
     return f"<sub>Config: {config_label}  |  Weights: {parts}</sub>"
