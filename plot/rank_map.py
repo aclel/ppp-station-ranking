@@ -9,7 +9,6 @@ def make_map(
     metric_cols,
     variant: str,
     plots_dir: Path,
-    contours=None,
     colorscale="viridis_r",
 ):
     """Builds a map showing rank with colour"""
@@ -54,7 +53,8 @@ def make_map(
 
     fig.update_layout(
         geo=dict(
-            projection=dict(type="natural earth"),
+            projection=dict(type="natural earth", rotation=dict(lon=30)),
+            lonaxis=dict(range=[-150, 210]),
             showland=True,
             landcolor="rgb(243,243,243)",
             showocean=True,

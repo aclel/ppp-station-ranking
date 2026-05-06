@@ -120,7 +120,7 @@ def make_agreement_map(
                     f"Rank: {int(r['rank'])}<br>"
                     f"Score: {r['score']:.3f}<br>"
                     f"Cluster: {r['status']} "
-                    f"(IGc20: {r['igc20_primary']}, yours: {r['ranking_best']})<br>"
+                    f"(IGc20: {r['igc20_primary']}, Rankings: {r['ranking_best']})<br>"
                     + "<br>".join(
                         f"{m}: {r[m]:.2f} ({r[f'{m}_diff']:+.2f})"
                         if pd.notna(r[m]) and pd.notna(r[f"{m}_diff"])
@@ -139,7 +139,8 @@ def make_agreement_map(
 
     fig.update_layout(
         geo=dict(
-            projection=dict(type="natural earth"),
+            projection=dict(type="natural earth", rotation=dict(lon=30)),
+            lonaxis=dict(range=[-150, 210]),
             showland=True,
             landcolor="rgb(243,243,243)",
             showocean=True,
