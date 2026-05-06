@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 import plotly.graph_objects as go
+import numpy as np
 
 
 IGRF_CSV = "data/igrfgridData.csv"
@@ -68,3 +69,28 @@ def inclination_contours(igrf_csv, year=2025.0):
 def stations(stations_csv):
     stations = pd.read_csv(stations_csv)
     return stations
+
+
+def add_metric_diffs(compare_df: pd.DataFrame, metric_cols: list[str]) -> pd.DataFrame:
+    """Per-metric signed diff vs the relevant cluster reference.
+
+    For the rankings's top pick in a cluster, ref is the runner-up.
+    For other ranked members, ref is the user's top pick.
+    Single-station clusters get NaN diffs.
+    """
+    df = compare_df.copy()
+    df["rank_in_cluster"] = (
+        df.groupby("cluster_id")["rank"].rank(method="first").astype(int)
+    )
+    is_best = df["rank_in_cluster"] == 1
+
+    for m in metric_cols:
+        rank1 = df.loc[df["rank_in_cluster"] == 1].set_index("cluster_id")[m]
+        rank2 = df.loc[df["rank_in_cluster"] == 2].set_index("cluster_id")[m]
+        ref = np.where(
+            is_best,
+            df["cluster_id"].map(rank2),
+            df["cluster_id"].map(rank1),
+        )
+        df[f"{m}_diff"] = df[m] - ref
+    return df

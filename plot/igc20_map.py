@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .utils import add_inclination_contours
+from .utils import add_inclination_contours, add_metric_diffs
 from pathlib import Path
 import plotly.graph_objects as go
 from utils import load_igc20_core
@@ -41,14 +41,25 @@ def compare_to_igc20(igc20: pd.DataFrame, ranking: pd.DataFrame) -> pd.DataFrame
     return out
 
 
-def make_agreement_map(ranking_df: pd.DataFrame, plots_dir: Path, stations):
+def make_agreement_map(
+    ranking_df: pd.DataFrame, metric_cols: pd.DataFrame, plots_dir: Path, stations
+):
     """Map of per-cluster agreement with the IGc20 core network."""
     igc20 = load_igc20_core("data/IGc20_core.txt")
-    compare_df = compare_to_igc20(igc20, ranking_df).merge(
-        stations[["station", "Latitude", "Longitude"]],
-        on="station",
-        how="left",
+    compare_df = (
+        compare_to_igc20(igc20, ranking_df)
+        .merge(
+            stations[["station", "Latitude", "Longitude"]],
+            on="station",
+            how="left",
+        )
+        .merge(
+            ranking_df[["station", "score"] + metric_cols],
+            on="station",
+            how="left",
+        )
     )
+    compare_df = add_metric_diffs(compare_df, metric_cols)
 
     fig = go.Figure()
 
@@ -101,8 +112,17 @@ def make_agreement_map(ranking_df: pd.DataFrame, plots_dir: Path, stations):
                 lambda r: (
                     f"<b>{r['station']}</b> (cluster {int(r['cluster_id'])})<br>"
                     f"Rank: {int(r['rank'])}<br>"
+                    f"Score: {r['score']:.3f}<br>"
                     f"Cluster: {r['status']} "
-                    f"(Ranking: {r['ranking_best']}), IGc20: {r['igc20_primary']}"
+                    f"(IGc20: {r['igc20_primary']}, yours: {r['ranking_best']})<br>"
+                    + "<br>".join(
+                        f"{m}: {r[m]:.2f} ({r[f'{m}_diff']:+.2f})"
+                        if pd.notna(r[m]) and pd.notna(r[f"{m}_diff"])
+                        else f"{m}: {r[m]:.2f}"
+                        if pd.notna(r[m])
+                        else f"{m}: -"
+                        for m in metric_cols
+                    )
                 ),
                 axis=1,
             ),

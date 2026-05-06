@@ -52,7 +52,7 @@ def plot(config_path: Path) -> None:
         make_map(ranks, metric_cols, plots_dir)
         make_trends(ranks, metric_cols, plots_dir)
         make_correlation_heatmap(ranks, metric_cols, plots_dir)
-        make_agreement_map(ranks, plots_dir, stations)
+        make_agreement_map(ranks, metric_cols, plots_dir, stations)
 
 
 if __name__ == "__main__":
