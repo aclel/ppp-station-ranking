@@ -3,6 +3,7 @@ from pathlib import Path
 from .rank_map import make_map
 from .score_trends import make_trends
 from .correlate import make_correlation_heatmap
+from .igc20_map import make_agreement_map
 from config import load_config
 
 import pandas as pd
@@ -51,6 +52,7 @@ def plot(config_path: Path) -> None:
         make_map(ranks, metric_cols, plots_dir)
         make_trends(ranks, metric_cols, plots_dir)
         make_correlation_heatmap(ranks, metric_cols, plots_dir)
+        make_agreement_map(ranks, plots_dir, stations)
 
 
 if __name__ == "__main__":

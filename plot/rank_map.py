@@ -1,9 +1,7 @@
-from .utils import inclination_contours
+from .utils import add_inclination_contours
 from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
-
-IGRF_CSV = "data/igrfgridData.csv"
 
 
 def make_map(
@@ -12,23 +10,7 @@ def make_map(
     """Builds a map showing rank with colour"""
     fig = go.Figure()
 
-    # Add geomagnetic inclination contours as a background
-    contours = inclination_contours(IGRF_CSV)
-    if contours:
-        for c in contours:
-            fig.add_trace(
-                go.Scattergeo(
-                    lon=c["lon"],
-                    lat=c["lat"],
-                    mode="lines",
-                    line=dict(
-                        color=c["color"], width=2 if abs(c["level"]) % 20 == 0 else 1
-                    ),
-                    hoverinfo="skip",
-                    showlegend=False,
-                    opacity=0.4,
-                )
-            )
+    add_inclination_contours(fig)
 
     # Show stations with coloured rank, show details on hover
     fig.add_trace(

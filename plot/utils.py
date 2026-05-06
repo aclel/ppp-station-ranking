@@ -1,6 +1,29 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+import plotly.graph_objects as go
+
+
+IGRF_CSV = "data/igrfgridData.csv"
+
+
+def add_inclination_contours(fig):
+    contours = inclination_contours(IGRF_CSV)
+    for c in contours:
+        fig.add_trace(
+            go.Scattergeo(
+                lon=c["lon"],
+                lat=c["lat"],
+                mode="lines",
+                line=dict(
+                    color=c["color"], width=2 if abs(c["level"]) % 20 == 0 else 1
+                ),
+                hoverinfo="skip",
+                showlegend=False,
+                opacity=0.4,
+            )
+        )
+
 
 def inclination_contours(igrf_csv, year=2025.0):
     """Build geomagnetic inclination contours from an igrf data csv"""
