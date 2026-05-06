@@ -137,6 +137,11 @@ def make_agreement_map(
         )
     )
 
+    # Calculate the number of agree and disagree for the subtitle
+    status_per_cluster = compare_df.drop_duplicates("cluster_id")["status"]
+    n_agree = (status_per_cluster == "agree").sum()
+    n_disagree = (status_per_cluster == "disagree").sum()
+
     fig.update_layout(
         geo=dict(
             projection=dict(type="natural earth", rotation=dict(lon=30)),
@@ -152,7 +157,10 @@ def make_agreement_map(
         width=1200,
         height=675,
         margin=dict(l=20, r=20, t=40, b=20),
-        title="Agreement with IGc20 core network<br><sub>Green = agree, Red=disagree</sub>",
+        title=(
+            f"Agreement with IGc20 core network"
+            f"<br><sub>Green = agree ({n_agree}), Red = disagree ({n_disagree})</sub>"
+        ),
         title_x=0.5,
     )
 
