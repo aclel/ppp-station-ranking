@@ -22,9 +22,12 @@ def make_map(
         go.Scattergeo(
             lon=ranking_df["Longitude"],
             lat=ranking_df["Latitude"],
-            mode="markers",
+            mode="markers+text",
+            text=ranking_df["rank"].astype(int).astype(str),
+            textposition="middle right",
+            textfont=dict(size=11, color="black", weight="bold"),
             marker=dict(
-                size=12,
+                size=14,
                 color=ranking_df["rank"],
                 colorscale=colorscale,
                 cmin=1,
