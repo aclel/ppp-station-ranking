@@ -59,6 +59,12 @@ def make_agreement_map(
             how="left",
         )
     )
+    # Remove clusters that only have one station
+    compare_df = compare_df.groupby("cluster_id").filter(
+        lambda g: g["station"].nunique() > 1
+    )
+
+    # Add metric diffs to compare between what the ranking got and the IGc
     compare_df = add_metric_diffs(compare_df, metric_cols)
 
     fig = go.Figure()
