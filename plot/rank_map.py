@@ -5,7 +5,12 @@ import plotly.graph_objects as go
 
 
 def make_map(
-    ranking_df, metric_cols, plots_dir: Path, contours=None, colorscale="viridis_r"
+    ranking_df,
+    metric_cols,
+    variant: str,
+    plots_dir: Path,
+    contours=None,
+    colorscale="viridis_r",
 ):
     """Builds a map showing rank with colour"""
     fig = go.Figure()
@@ -61,7 +66,7 @@ def make_map(
     )
 
     fig.update_layout(
-        title="Station Ranks",
+        title=f"Station Ranks - {variant}",
         title_x=0.5,  # centred
     )
     fig.write_html(

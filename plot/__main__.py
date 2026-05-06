@@ -49,7 +49,7 @@ def plot(config_path: Path) -> None:
 
         plots_dir = variant_dir
         plots_dir.mkdir(parents=True, exist_ok=True)
-        make_map(ranks, metric_cols, plots_dir)
+        make_map(ranks, metric_cols, variant.name, plots_dir)
         make_trends(ranks, metric_cols, plots_dir)
         make_correlation_heatmap(ranks, metric_cols, plots_dir)
         make_agreement_map(ranks, metric_cols, plots_dir, stations)
