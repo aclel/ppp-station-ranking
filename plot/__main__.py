@@ -95,8 +95,17 @@ def plot(config_path: Path) -> None:
         make_lat_ranks(
             ranks,
             plots_dir,
+            variant.name,
+            config_label=config_label,
+            weights=config.weights,
         )
-        make_mag_lat_ranks(ranks, plots_dir)
+        make_mag_lat_ranks(
+            ranks,
+            plots_dir,
+            variant.name,
+            config_label=config_label,
+            weights=config.weights,
+        )
 
 
 if __name__ == "__main__":

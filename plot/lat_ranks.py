@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.graph_objects as go
 import aacgmv2
 from datetime import datetime
+from pathlib import Path
+
+from .utils import format_config_footer
 
 
 def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
@@ -29,16 +32,28 @@ def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
     fig.write_html(out_path, include_plotlyjs="cdn", full_html=True)
 
 
-def make_lat_ranks(ranking_df, plots_dir):
+def make_lat_ranks(
+    ranking_df,
+    plots_dir: Path,
+    variant,
+    config_label: str,
+    weights: dict[str, float],
+):
     _plot_rank_by_lat_bin(
         ranking_df,
         "Latitude",
-        "Average rank by geographic latitude (20 deg bins)",
-        "lat_ranks_geographic.html",
+        f"Average rank by geographic latitude (20 deg bins)<sub>{variant}<br>{format_config_footer(config_label, weights)}</sub>",
+        Path(plots_dir) / "lat_ranks_geographic.html",
     )
 
 
-def make_mag_lat_ranks(ranking_df, plots_dir):
+def make_mag_lat_ranks(
+    ranking_df,
+    plots_dir: Path,
+    variant,
+    config_label: str,
+    weights: dict[str, float],
+):
     epoch = datetime(2025, 1, 1)
     mlat, mlon, _ = aacgmv2.convert_latlon_arr(
         ranking_df["Latitude"].values,
@@ -52,6 +67,6 @@ def make_mag_lat_ranks(ranking_df, plots_dir):
     _plot_rank_by_lat_bin(
         ranking_df,
         "mag_lat",
-        "Average rank by magnetic latitude (20 deg bins)",
-        "lat_ranks_magnetic.html",
+        f"Average rank by magnetic latitude (20 deg bins)<sub>{variant}<br>{format_config_footer(config_label, weights)}</sub>",
+        Path(plots_dir) / "lat_ranks_magnetic.html",
     )

@@ -161,7 +161,7 @@ def make_agreement_map(
         ),
         width=1200,
         height=675,
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin=dict(l=20, r=20, t=120, b=20),
         title=(
             f"Agreement with IGc20 core network"
             f"<br><sub>Green = agree ({n_agree}), Red = disagree ({n_disagree})</sub>"
