@@ -59,7 +59,7 @@ def make_trends(
         title=f"Station score over time<br>{format_config_footer(config_label, weights)}",
         height=700,
         legend=dict(itemsizing="constant"),
-        hovermode="closest",
+        hovermode="x unified",
     )
     fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
     return fig
