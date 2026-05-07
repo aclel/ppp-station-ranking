@@ -43,6 +43,10 @@ def plot(config_path: Path) -> None:
             how="left",
         )
 
+        is_global = (
+            ranks[["window_start", "window_end"]].drop_duplicates().shape[0] == 1
+        )
+
         log.info("Building metric cols")
         metric_cols = [
             c
@@ -62,50 +66,62 @@ def plot(config_path: Path) -> None:
             key=lambda m: config.weights.get(m, float("-inf")), reverse=True
         )
 
+        log.info("Preparing plots")
         plots_dir = variant_dir
         plots_dir.mkdir(parents=True, exist_ok=True)
-        make_map(
-            ranks,
-            metric_cols,
-            variant.name,
-            plots_dir,
-            config_label=config_label,
-            weights=config.weights,
-        )
-        make_trends(
-            ranks,
-            metric_cols,
-            plots_dir,
-            config_label=config_label,
-            weights=config.weights,
-        )
-        make_correlation_heatmap(
-            ranks,
-            metric_cols,
-            plots_dir,
-        )
-        make_agreement_map(
-            ranks,
-            metric_cols,
-            plots_dir,
-            stations,
-            config_label=config_label,
-            weights=config.weights,
-        )
-        make_lat_ranks(
-            ranks,
-            plots_dir,
-            variant.name,
-            config_label=config_label,
-            weights=config.weights,
-        )
-        make_mag_lat_ranks(
-            ranks,
-            plots_dir,
-            variant.name,
-            config_label=config_label,
-            weights=config.weights,
-        )
+
+        if is_global:
+            log.info("Rank map")
+            make_map(
+                ranks,
+                metric_cols,
+                variant.name,
+                plots_dir,
+                config_label=config_label,
+                weights=config.weights,
+            )
+            log.info("IGc20 Agreement")
+            make_agreement_map(
+                ranks,
+                metric_cols,
+                plots_dir,
+                stations,
+                config_label=config_label,
+                weights=config.weights,
+            )
+            log.info("Lat ranks")
+            make_lat_ranks(
+                ranks,
+                plots_dir,
+                variant.name,
+                config_label=config_label,
+                weights=config.weights,
+            )
+            log.info("Lat ranks magnetic")
+            make_mag_lat_ranks(
+                ranks,
+                plots_dir,
+                variant.name,
+                config_label=config_label,
+                weights=config.weights,
+            )
+            log.info("Correlations")
+            make_correlation_heatmap(
+                ranks,
+                metric_cols,
+                plots_dir,
+            )
+        else:
+            log.info("Score trends")
+            make_trends(
+                ranks,
+                metric_cols,
+                plots_dir,
+                config_label=config_label,
+                weights=config.weights,
+            )
+
+    log.info("Done")
 
 
 if __name__ == "__main__":
