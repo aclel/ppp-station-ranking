@@ -1,22 +1,26 @@
-name: global
-output_dir: ../results/global
+name: ppp
+output_dir: ../results/ppp
 start_date: "2019-01-01"
-end_date: "2025-11-15"
+end_date: "2025-12-31"
 window_days: null
-cache_dir: cache/query
+cache_dir: cache2/query
                                                                                                                                                                                                                
 weights:
-  phase_wrms: 0.3
+  phase_wrms: 0.25
   code_wrms: 0.10
   satellite_gaps: 0.075
   uptime: 0.075
-  amb_resets: 0.15
+  amb_resets: 0.2
   h_conv: 0.1
   v_conv: 0.1
   cn0: 0.05
   mp1: 0.018
   mp2: 0.016
   mp5: 0.016
+  # mw12: 0.18
+  # mw15: 0.16
+  # mw25: 0.16
+
   
 variants:
     - {name: additive, aggregator: weighted_sum}
