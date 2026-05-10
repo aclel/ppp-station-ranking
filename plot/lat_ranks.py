@@ -42,7 +42,7 @@ def make_lat_ranks(
     _plot_rank_by_lat_bin(
         ranking_df,
         "Latitude",
-        f"Average rank by geographic latitude (20 deg bins)<sub>{variant}<br>{format_config_footer(config_label, weights)}</sub>",
+        f"Average rank by geographic latitude (20 deg bins) - {variant.upper()}<sub><br>{format_config_footer(config_label, weights)}</sub>",
         Path(plots_dir) / "lat_ranks_geographic.html",
     )
 
@@ -67,6 +67,6 @@ def make_mag_lat_ranks(
     _plot_rank_by_lat_bin(
         ranking_df,
         "mag_lat",
-        f"Average rank by magnetic latitude (20 deg bins)<sub>{variant}<br>{format_config_footer(config_label, weights)}</sub>",
+        f"Average rank by magnetic latitude (20 deg bins) - {variant.upper()}<sub><br>{format_config_footer(config_label, weights)}</sub>",
         Path(plots_dir) / "lat_ranks_magnetic.html",
     )
