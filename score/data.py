@@ -179,8 +179,11 @@ def load_metrics(config: ScoreConfig) -> pd.DataFrame:
 
     df = pd.concat(frames, ignore_index=True)
 
-    # HACK: remove Jun 4–24 2020 - they were contaminated by unhealthy R22 satellite
+    # HACK: remove Jun 4-24 2020 - they were contaminated by unhealthy R22 satellite
     df = df[~df["date"].between("2020-06-04", "2020-06-24")]
+
+    # HACK: remove August 31 2020 - many stations with very poor phase RMS, convergence time - unhealthy satellite
+    df = df[~df["date"].between("2022-08-31", "2022-08-31")]
 
     return df[
         (df["date"] >= pd.Timestamp(config.start_date))
