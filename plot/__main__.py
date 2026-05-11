@@ -5,7 +5,7 @@ from .rank_map import make_map
 from .score_trends import make_trends
 from .correlate import make_correlation_heatmap
 from .igc20_map import make_agreement_map
-from .lat_ranks import make_lat_ranks, make_mag_lat_ranks
+from .lat_ranks import make_lat_ranks
 from config import load_config
 
 import pandas as pd
@@ -91,14 +91,6 @@ def plot(config_path: Path) -> None:
             )
             log.info("Lat ranks")
             make_lat_ranks(
-                ranks,
-                plots_dir,
-                variant.name,
-                config_label=config_label,
-                weights=config.weights,
-            )
-            log.info("Lat ranks magnetic")
-            make_mag_lat_ranks(
                 ranks,
                 plots_dir,
                 variant.name,
