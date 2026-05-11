@@ -10,6 +10,7 @@ def make_correlation_heatmap(
     ranking_df: pd.DataFrame,
     metric_cols: list[str],
     plots_dir: Path,
+    include_titles=True,
     method: str = "spearman",
 ) -> go.Figure:
     """Build a correlation heatmap between normalised metrics"""
@@ -33,7 +34,11 @@ def make_correlation_heatmap(
         )
     )
     fig.update_layout(
-        title=f"{method.capitalize()} correlation across stations",
+        title=(
+            f"{method.capitalize()} correlation across stations"
+            if include_titles
+            else ""
+        ),
         width=700,
         height=700,
         xaxis=dict(tickangle=-45),

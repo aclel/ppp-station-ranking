@@ -6,7 +6,7 @@ from pathlib import Path
 from .utils import format_config_footer
 
 
-def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
+def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path, include_titles=True):
     bin_edges = np.arange(-90, 91, 20)
     bin_labels = (bin_edges[:-1] + bin_edges[1:]) / 2
 
@@ -23,7 +23,7 @@ def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
 
     fig = go.Figure(go.Bar(x=avg_rank["_bin"].astype(float), y=avg_rank["mean_rank"]))
     fig.update_layout(
-        title=title,
+        title=title if include_titles else "",
         xaxis_title="Latitude bin centre (°)",
         yaxis_title="Mean rank",
     )
@@ -36,10 +36,12 @@ def make_lat_ranks(
     variant,
     config_label: str,
     weights: dict[str, float],
+    include_titles=True,
 ):
     _plot_rank_by_lat_bin(
         ranking_df,
         "Latitude",
         f"Average rank by geographic latitude (20 deg bins) - {variant.upper()}<sub><br>{format_config_footer(config_label, weights)}</sub>",
         Path(plots_dir) / "lat_ranks_geographic.html",
+        include_titles=include_titles,
     )

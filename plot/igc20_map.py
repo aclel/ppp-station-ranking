@@ -48,6 +48,7 @@ def make_agreement_map(
     stations,
     config_label: str,
     weights: dict[str, float],
+    include_titles="",
 ):
     """Map of per-cluster agreement with the IGc20 core network."""
     igc20 = load_igc20_core("data/IGc20_core.txt")
@@ -166,7 +167,9 @@ def make_agreement_map(
             f"Agreement with IGc20 core network"
             f"<br><sub>Green = agree ({n_agree}), Red = disagree ({n_disagree})</sub>"
             f"<br>{format_config_footer(config_label, weights)}"
-        ),
+        )
+        if include_titles
+        else "",
         title_x=0.5,
     )
 

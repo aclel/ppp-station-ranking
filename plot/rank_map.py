@@ -11,6 +11,7 @@ def make_map(
     plots_dir: Path,
     config_label: str,
     weights: dict[str, float],
+    include_titles=True,
     colorscale="viridis_r",
 ):
     """Builds a map showing rank with colour"""
@@ -71,7 +72,11 @@ def make_map(
     )
 
     fig.update_layout(
-        title=f"Station Ranks - {variant}<br>{format_config_footer(config_label, weights)}",
+        title=(
+            f"Station Ranks - {variant}<br>{format_config_footer(config_label, weights)}"
+        )
+        if include_titles
+        else "",
         title_x=0.5,  # centred
     )
     fig.write_html(

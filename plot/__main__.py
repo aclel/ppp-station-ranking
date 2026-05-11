@@ -21,7 +21,7 @@ log = logging.getLogger("plot")
     type=click.Path(exists=True, path_type=Path),
     required=True,
 )
-def plot(config_path: Path) -> None:
+def plot(config_path: Path, include_titles=False) -> None:
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
@@ -79,6 +79,7 @@ def plot(config_path: Path) -> None:
                 plots_dir,
                 config_label=config_label,
                 weights=config.weights,
+                include_titles=include_titles,
             )
             log.info("IGc20 Agreement")
             make_agreement_map(
@@ -88,6 +89,7 @@ def plot(config_path: Path) -> None:
                 stations,
                 config_label=config_label,
                 weights=config.weights,
+                include_titles=include_titles,
             )
             log.info("Lat ranks")
             make_lat_ranks(
@@ -96,12 +98,14 @@ def plot(config_path: Path) -> None:
                 variant.name,
                 config_label=config_label,
                 weights=config.weights,
+                include_titles=include_titles,
             )
             log.info("Correlations")
             make_correlation_heatmap(
                 ranks,
                 metric_cols,
                 plots_dir,
+                include_titles=include_titles,
             )
         else:
             log.info("Score trends")
@@ -111,6 +115,7 @@ def plot(config_path: Path) -> None:
                 plots_dir,
                 config_label=config_label,
                 weights=config.weights,
+                include_titles=include_titles,
             )
 
     log.info("Done")

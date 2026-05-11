@@ -11,6 +11,7 @@ def make_trends(
     plots_dir: Path,
     config_label: str,
     weights: dict[str, float],
+    include_titles=True,
 ) -> go.Figure:
     """Plots station scores (not ranks) over time"""
     df = ranking_df.copy()
@@ -56,7 +57,11 @@ def make_trends(
     fig.update_yaxes(title="Score")
     fig.update_xaxes(title="Time")
     fig.update_layout(
-        title=f"Station score over time<br>{format_config_footer(config_label, weights)}",
+        title=(
+            f"Station score over time<br>{format_config_footer(config_label, weights)}"
+        )
+        if include_titles
+        else "",
         height=700,
         legend=dict(itemsizing="constant"),
         hovermode="x unified",
