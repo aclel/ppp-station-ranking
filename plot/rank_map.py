@@ -25,7 +25,7 @@ def make_map(
             lon=ranking_df["Longitude"],
             lat=ranking_df["Latitude"],
             mode="markers+text",
-            text=ranking_df["rank"].astype(int).astype(str),
+            # text=ranking_df["rank"].astype(int).astype(str),
             textposition="middle right",
             textfont=dict(size=11, color="black", weight="bold"),
             marker=dict(

@@ -6,6 +6,7 @@ from .score_trends import make_trends
 from .correlate import make_correlation_heatmap
 from .igc20_map import make_agreement_map
 from .lat_ranks import make_lat_ranks
+from .station_map import make_station_map
 from config import load_config
 
 import pandas as pd
@@ -30,8 +31,8 @@ def plot(config_path: Path, include_titles=False) -> None:
     config = load_config(config_path)
     config_label = config_path.name
 
-    stations_csv = "data/igs_stations.csv"
-    stations = pd.read_csv(stations_csv)
+    igs_csv = "data/igs_stations.csv"
+    stations = pd.read_csv(igs_csv)
     stations["station"] = stations["Site Name"].astype(str).str[:4]
 
     for variant in config.variants:
@@ -69,6 +70,14 @@ def plot(config_path: Path, include_titles=False) -> None:
         log.info("Preparing plots")
         plots_dir = variant_dir
         plots_dir.mkdir(parents=True, exist_ok=True)
+
+        log.info("Rank map")
+        make_station_map(
+            stations_file="data/stations.txt",
+            igs_csv=igs_csv,
+            plots_dir=plots_dir,
+            include_titles=include_titles,
+        )
 
         if is_global:
             log.info("Rank map")
