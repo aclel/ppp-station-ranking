@@ -7,6 +7,7 @@ from .correlate import make_correlation_heatmap
 from .igc20_map import make_agreement_map
 from .lat_ranks import make_lat_ranks
 from .station_map import make_station_map
+from .station_metrics import make_station_metrics
 from config import load_config
 
 import pandas as pd
@@ -124,8 +125,19 @@ def plot(config_path: Path, include_titles=False) -> None:
                 plots_dir,
                 config_label=config_label,
                 weights=config.weights,
+                stations=["BRUX"],
                 include_titles=include_titles,
             )
+            log.info("Station metrics")
+            metric_stations = ["BRUX", "TOW2"]
+            for stn in metric_stations:
+                make_station_metrics(
+                    ranks,
+                    stn,
+                    metric_cols,
+                    plots_dir,
+                    include_titles=include_titles,
+                )
 
     log.info("Done")
 

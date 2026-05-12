@@ -11,6 +11,7 @@ def make_trends(
     plots_dir: Path,
     config_label: str,
     weights: dict[str, float],
+    stations=[],
     include_titles=True,
 ) -> go.Figure:
     """Plots station scores (not ranks) over time"""
@@ -20,6 +21,8 @@ def make_trends(
     df["window_mid"] = df["window_start"] + (df["window_end"] - df["window_start"]) / 2
 
     all_windows = df[["window_start", "window_end", "window_mid"]].drop_duplicates()
+    if stations:
+        df = df[df["station"].isin(stations)]
 
     fig = go.Figure()
     for station, sub in df.groupby("station"):
@@ -64,6 +67,7 @@ def make_trends(
         else "",
         height=700,
         legend=dict(itemsizing="constant"),
+        showlegend=False,
         hovermode="x unified",
     )
     fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
