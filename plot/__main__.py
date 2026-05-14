@@ -4,6 +4,8 @@ import logging
 from score.data import load_metrics
 from .rank_map import make_map
 from .score_trends import make_trends
+from .trend_fits import make_trend_fits
+from .trend_map import make_trend_map
 from .correlate import make_correlation_heatmap
 from .igc20_map import make_agreement_map
 from .lat_ranks import make_lat_ranks
@@ -131,6 +133,23 @@ def plot(config_path: Path, include_titles=True) -> None:
                 config_label=config_label,
                 weights=config.weights,
                 # stations=["BRUX"],
+                include_titles=include_titles,
+            )
+            log.info("Score trend fits")
+            _, fits = make_trend_fits(
+                ranks,
+                plots_dir,
+                config_label=config_label,
+                weights=config.weights,
+                include_titles=include_titles,
+            )
+            log.info("Score trend map")
+            make_trend_map(
+                fits,
+                ranks,
+                plots_dir,
+                config_label=config_label,
+                weights=config.weights,
                 include_titles=include_titles,
             )
             log.info("Station metrics")

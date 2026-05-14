@@ -67,7 +67,7 @@ def make_trends(
         else "",
         height=700,
         legend=dict(itemsizing="constant"),
-        showlegend=False,
+        showlegend=True,
         hovermode="x unified",
     )
     fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
