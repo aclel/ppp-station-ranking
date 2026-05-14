@@ -8,7 +8,7 @@ from metrics import METRICS
 @dataclass(frozen=True)
 class Variant:
     name: str
-    aggregator: str
+    aggregator: str  # How a score is built from the metrics (TOPSIS, weighted sum etc)
 
 
 @dataclass(frozen=True)
@@ -21,6 +21,9 @@ class ScoreConfig:
     weights: dict[str, float]
     variants: tuple[Variant, ...]
     window_days: int | None = None
+    peer_relative: bool = (
+        True  # Metric minus network median to remove effects of PPP product improvement
+    )
 
 
 def _read_yaml(path) -> dict:
@@ -40,6 +43,7 @@ def _build_config(raw: dict, base_dir: Path) -> ScoreConfig:
         weights={name: float(w) for name, w in raw["weights"].items()},
         variants=tuple(Variant(**v) for v in raw["variants"]),
         window_days=int(raw["window_days"]) if raw["window_days"] else None,
+        peer_relative=raw["peer_relative"],
     )
 
 

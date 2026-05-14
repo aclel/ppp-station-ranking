@@ -14,11 +14,7 @@ def build_windows(df: pd.DataFrame, config: ScoreConfig) -> pd.DataFrame:
     df = assign_windows(df, config.window_days, config.start_date, config.end_date)
     return (
         df.groupby(["station", "window_start", "window_end", "metric"])
-        .agg(
-            score=("score", default_aggregator),
-            n_days=("score", "size"),
-            n_clipped=("clipped", "sum"),
-        )
+        .agg(score=("score", default_aggregator), n_days=("score", "size"))
         .reset_index()
     )
 

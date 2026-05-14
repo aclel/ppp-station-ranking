@@ -24,7 +24,7 @@ def run(config: ScoreConfig) -> None:
     # to determine global anchors for what good and bad means
     # for each metric
     log.info("Normalising metrics")
-    scaled = normalise(df)
+    scaled = normalise(df, peer_relative=config.peer_relative)
 
     # Takes the mean for each metric in each window for each station
     log.info("Building a row of metrics for each window")
