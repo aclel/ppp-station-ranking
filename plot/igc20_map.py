@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .utils import add_inclination_contours, add_metric_diffs, format_config_footer
+from .utils import add_metric_diffs, format_config_footer
 from pathlib import Path
 import plotly.graph_objects as go
 from utils import load_igc20_core
@@ -74,9 +74,6 @@ def make_agreement_map(
     compare_df = add_metric_diffs(compare_df, metric_cols)
 
     fig = go.Figure()
-
-    # Add geomagnetic inclination contours
-    add_inclination_contours(fig)
 
     # Draw lines from ranked station to the alternatives in the cluster
     best_loc = compare_df[
