@@ -173,9 +173,10 @@ def make_agreement_map(
         title_x=0.5,
     )
 
-    fig.write_html(
-        plots_dir / "igc20_agreement_map.html",
-        include_plotlyjs="cdn",
-        full_html=True,
-    )
+    if plots_dir:
+        fig.write_html(
+            plots_dir / "igc20_agreement_map.html",
+            include_plotlyjs="cdn",
+            full_html=True,
+        )
     return fig

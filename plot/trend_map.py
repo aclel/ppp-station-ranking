@@ -77,7 +77,8 @@ def make_trend_map(
         else "",
         title_x=0.5,
     )
-    fig.write_html(
-        plots_dir / "score_trend_map.html", include_plotlyjs="cdn", full_html=True
-    )
+    if plots_dir:
+        fig.write_html(
+            plots_dir / "score_trend_map.html", include_plotlyjs="cdn", full_html=True
+        )
     return fig

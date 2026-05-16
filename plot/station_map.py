@@ -63,7 +63,8 @@ def make_station_map(
         title_x=0.5,
     )
 
-    fig.write_html(
-        plots_dir / "station_map.html", include_plotlyjs="cdn", full_html=True
-    )
+    if plots_dir:
+        fig.write_html(
+            plots_dir / "station_map.html", include_plotlyjs="cdn", full_html=True
+        )
     return fig

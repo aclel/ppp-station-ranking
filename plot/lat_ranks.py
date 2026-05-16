@@ -27,7 +27,8 @@ def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path, include_titles=T
         xaxis_title="Latitude bin centre (°)",
         yaxis_title="Mean rank",
     )
-    fig.write_html(out_path, include_plotlyjs="cdn", full_html=True)
+    if out_path:
+        fig.write_html(out_path, include_plotlyjs="cdn", full_html=True)
 
 
 def make_lat_ranks(

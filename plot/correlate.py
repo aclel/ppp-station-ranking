@@ -44,7 +44,8 @@ def make_correlation_heatmap(
         xaxis=dict(tickangle=-45),
     )
     fig.update_yaxes(autorange="reversed")
-    fig.write_html(
-        plots_dir / "correlation.html", include_plotlyjs="cdn", full_html=True
-    )
+    if plots_dir:
+        fig.write_html(
+            plots_dir / "correlation.html", include_plotlyjs="cdn", full_html=True
+        )
     return fig

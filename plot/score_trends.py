@@ -70,5 +70,6 @@ def make_trends(
         showlegend=True,
         hovermode="x unified",
     )
-    fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
+    if plots_dir:
+        fig.write_html(plots_dir / "score_trends.html", include_plotlyjs="cdn")
     return fig

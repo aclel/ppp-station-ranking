@@ -79,7 +79,8 @@ def make_map(
         else "",
         title_x=0.5,  # centred
     )
-    fig.write_html(
-        plots_dir / "ranking_map.html", include_plotlyjs="cdn", full_html=True
-    )
+    if plots_dir:
+        fig.write_html(
+            plots_dir / "ranking_map.html", include_plotlyjs="cdn", full_html=True
+        )
     return fig
