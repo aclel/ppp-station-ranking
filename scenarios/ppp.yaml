@@ -7,20 +7,20 @@ cache_dir: cache2/query
 peer_relative: True
                                                                                                                                                                                                                
 weights:
-  phase_wrms: 0.25
+  phase_wrms: 0.225
   code_wrms: 0.10
   satellite_gaps: 0.075
   uptime: 0.075
-  amb_resets: 0.2
+  amb_resets: 0.175
   h_conv: 0.1
   v_conv: 0.1
   cn0: 0.05
-  mp1: 0.018
-  mp2: 0.016
-  mp5: 0.016
-  # mw12: 0.18
-  # mw15: 0.16
-  # mw25: 0.16
+  mp1: 0.0167
+  mp2: 0.0167
+  mp5: 0.0167
+  mw12: 0.0167
+  mw15: 0.0167
+  mw25: 0.0167
 
   
 variants:

@@ -4,7 +4,8 @@ start_date: "2019-01-01"
 end_date: "2025-12-31"
 window_days: null
 cache_dir: cache2/query
-                                                                                                                                                                                                               
+peer_relative: True
+
 weights:
   satellite_gaps: 1
   uptime: 1
@@ -13,6 +14,9 @@ weights:
   mp1: 1
   mp2: 1
   mp5: 1
+  mw12: 1
+  mw15: 1
+  mw25: 1
   
 variants:
     - {name: additive, aggregator: weighted_sum}
