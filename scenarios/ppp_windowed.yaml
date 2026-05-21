@@ -1,26 +1,26 @@
-name: ppp_equal
-output_dir: ../results/ppp_equal
+name: ppp_windowed
+output_dir: ../results/ppp_windowed
 start_date: "2019-01-01"
 end_date: "2025-12-31"
-window_days: null
+window_days: 1
 cache_dir: cache2/query
 peer_relative: True
                                                                                                                                                                                                                
 weights:
-  phase_wrms: 1
-  code_wrms: 1
-  satellite_gaps: 1
-  uptime: 1
-  amb_resets: 1
-  h_conv: 1
-  v_conv: 1
-  cn0: 1
-  mp1: 1
-  mp2: 1
-  mp5: 1
-  # mw12: 1
-  # mw15: 1
-  # mw25: 1
+  phase_wrms: 0.225
+  code_wrms: 0.10
+  satellite_gaps: 0.075
+  uptime: 0.075
+  amb_resets: 0.175
+  h_conv: 0.1
+  v_conv: 0.1
+  cn0: 0.05
+  mp1: 0.0167
+  mp2: 0.0167
+  mp5: 0.0167
+  mw12: 0.0167
+  mw15: 0.0167
+  mw25: 0.0167
 
   
 variants:

@@ -1,19 +1,10 @@
-from .utils import add_inclination_contours, format_config_footer
+from .utils import add_inclination_contours
 from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 
 
-def make_map(
-    ranking_df,
-    metric_cols,
-    variant: str,
-    plots_dir: Path,
-    config_label: str,
-    weights: dict[str, float],
-    include_titles=True,
-    colorscale="viridis_r",
-):
+def make_map(ranking_df, metric_cols, title: str, plots_dir: Path = None):
     """Builds a map showing rank with colour"""
     fig = go.Figure()
 
@@ -31,7 +22,7 @@ def make_map(
             marker=dict(
                 size=14,
                 color=ranking_df["rank"],
-                colorscale=colorscale,
+                colorscale="viridis_r",
                 cmin=1,
                 cmax=int(ranking_df["rank"].max()),
                 line=dict(width=1, color="black"),
@@ -72,11 +63,7 @@ def make_map(
     )
 
     fig.update_layout(
-        title=(
-            f"Station Ranks - {variant}<br>{format_config_footer(config_label, weights)}"
-        )
-        if include_titles
-        else "",
+        title=title,
         title_x=0.5,  # centred
     )
     if plots_dir:

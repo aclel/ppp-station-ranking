@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .utils import add_metric_diffs, format_config_footer
+from .utils import add_metric_diffs
 from pathlib import Path
 import plotly.graph_objects as go
 from utils import load_igc20_core
@@ -46,9 +46,7 @@ def make_agreement_map(
     metric_cols: pd.DataFrame,
     plots_dir: Path,
     stations,
-    config_label: str,
-    weights: dict[str, float],
-    include_titles="",
+    title: str,
 ):
     """Map of per-cluster agreement with the IGc20 core network."""
     igc20 = load_igc20_core("data/IGc20_core.txt")
@@ -140,11 +138,6 @@ def make_agreement_map(
         )
     )
 
-    # Calculate the number of agree and disagree for the subtitle
-    status_per_cluster = compare_df.drop_duplicates("cluster_id")["status"]
-    n_agree = (status_per_cluster == "agree").sum()
-    n_disagree = (status_per_cluster == "disagree").sum()
-
     fig.update_layout(
         geo=dict(
             projection=dict(type="natural earth", rotation=dict(lon=30)),
@@ -160,13 +153,7 @@ def make_agreement_map(
         width=1200,
         height=675,
         margin=dict(l=20, r=20, t=120, b=20),
-        title=(
-            f"Agreement with IGc20 core network"
-            f"<br><sub>Green = agree ({n_agree}), Red = disagree ({n_disagree})</sub>"
-            f"<br>{format_config_footer(config_label, weights)}"
-        )
-        if include_titles
-        else "",
+        title=title,
         title_x=0.5,
     )
 

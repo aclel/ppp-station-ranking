@@ -2,7 +2,7 @@ name: ppp
 output_dir: ../results/ppp
 start_date: "2019-01-01"
 end_date: "2025-12-31"
-window_days: 1
+window_days: null
 cache_dir: cache2/query
 peer_relative: True
                                                                                                                                                                                                                

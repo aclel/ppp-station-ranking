@@ -8,11 +8,9 @@ from .utils import format_config_footer
 def make_trends(
     ranking_df: pd.DataFrame,
     metric_cols: list[str],
-    plots_dir: Path,
-    config_label: str,
-    weights: dict[str, float],
+    title: str,
     stations=[],
-    include_titles=True,
+    plots_dir: Path = None,
 ) -> go.Figure:
     """Plots station scores (not ranks) over time"""
     df = ranking_df.copy()
@@ -60,11 +58,7 @@ def make_trends(
     fig.update_yaxes(title="Score")
     fig.update_xaxes(title="Time")
     fig.update_layout(
-        title=(
-            f"Station score over time<br>{format_config_footer(config_label, weights)}"
-        )
-        if include_titles
-        else "",
+        title=title,
         height=700,
         legend=dict(itemsizing="constant"),
         showlegend=True,

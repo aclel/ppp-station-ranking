@@ -2,16 +2,11 @@ from pathlib import Path
 import pandas as pd
 import plotly.graph_objects as go
 
-from .utils import add_inclination_contours, format_config_footer
+from .utils import add_inclination_contours
 
 
 def make_trend_map(
-    fits: pd.DataFrame,
-    ranking_df: pd.DataFrame,
-    plots_dir: Path,
-    config_label: str,
-    weights: dict[str, float],
-    include_titles=True,
+    fits: pd.DataFrame, ranking_df: pd.DataFrame, title: str, plots_dir: Path = None
 ) -> go.Figure:
     """Map of per-station score slope (units/year).
 
@@ -70,11 +65,7 @@ def make_trend_map(
         width=1200,
         height=675,
         margin=dict(l=20, r=20, t=40, b=20),
-        title=(
-            f"Score trend per station<br>{format_config_footer(config_label, weights)}"
-        )
-        if include_titles
-        else "",
+        title=title,
         title_x=0.5,
     )
     if plots_dir:

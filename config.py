@@ -2,6 +2,7 @@ import yaml
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import ClassVar
 from metrics import METRICS
 
 
@@ -9,6 +10,9 @@ from metrics import METRICS
 class Variant:
     name: str
     aggregator: str  # How a score is built from the metrics (TOPSIS, weighted sum etc)
+
+    topsis: ClassVar["Variant"]
+    additive: ClassVar["Variant"]
 
 
 @dataclass(frozen=True)
@@ -24,6 +28,10 @@ class ScoreConfig:
     peer_relative: bool = (
         True  # Metric minus network median to remove effects of PPP product improvement
     )
+
+
+Variant.topsis = Variant(name="topsis", aggregator="topsis")
+Variant.additive = Variant(name="additive", aggregator="weighted_sum")
 
 
 def _read_yaml(path) -> dict:

@@ -17,6 +17,8 @@ from .station_metrics import make_station_metrics
 from .metric_network_mean import plot_raw_network_metric
 from config import load_config
 
+from .utils import format_config_footer, load_ranks
+
 import pandas as pd
 import click
 
@@ -35,7 +37,7 @@ def plot(config_path: Path, include_titles=True) -> None:
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
 
-    log.info("Building plots")
+    log.info("Loading config")
     config = load_config(config_path)
     config_label = config_path.name
 
@@ -49,33 +51,10 @@ def plot(config_path: Path, include_titles=True) -> None:
     for variant in config.variants:
         variant_dir = config.output_dir / variant.name
         log.info(f"Building plots for {variant.name}")
-        ranks = pd.read_csv(variant_dir / "ranking.csv").merge(
-            stations[["station", "Latitude", "Longitude"]],
-            on="station",
-            how="left",
-        )
+        ranks, metric_cols = load_ranks(config, variant, stations)
 
         is_global = (
             ranks[["window_start", "window_end"]].drop_duplicates().shape[0] == 1
-        )
-
-        log.info("Building metric cols")
-        metric_cols = [
-            c
-            for c in ranks.columns
-            if c
-            not in {
-                "station",
-                "window_start",
-                "window_end",
-                "score",
-                "rank",
-                "Latitude",
-                "Longitude",
-            }
-        ]
-        metric_cols.sort(
-            key=lambda m: config.weights.get(m, float("-inf")), reverse=True
         )
 
         log.info("Preparing plots")
@@ -91,15 +70,13 @@ def plot(config_path: Path, include_titles=True) -> None:
         )
 
         if is_global:
+            footer = format_config_footer(config_label, config.weights)
             log.info("Rank map")
             make_map(
                 ranks,
                 metric_cols,
-                variant.name,
                 plots_dir,
-                config_label=config_label,
-                weights=config.weights,
-                include_titles=include_titles,
+                title=(f"Station Ranks - {variant.name}<br>{footer}"),
             )
             log.info("IGc20 Agreement")
             make_agreement_map(
@@ -107,36 +84,29 @@ def plot(config_path: Path, include_titles=True) -> None:
                 metric_cols,
                 plots_dir,
                 stations,
-                config_label=config_label,
-                weights=config.weights,
-                include_titles=include_titles,
+                title=(f"PPP-augmented ranks vs IGc20 cluster primary<br>{footer}"),
             )
             log.info("Lat ranks")
             make_lat_ranks(
                 ranks,
-                plots_dir,
-                variant.name,
-                config_label=config_label,
-                weights=config.weights,
-                include_titles=include_titles,
+                title="PPP-augmented metrics - Average rank by geographic latitude",
+                plots_dir=plots_dir,
             )
             log.info("Correlations")
             make_correlation_heatmap(
                 ranks,
                 metric_cols,
                 plots_dir,
-                include_titles=include_titles,
+                title=f"Correlation across stations - {variant.name.upper()}",
             )
         else:
             log.info("Score trends")
             make_trends(
                 ranks,
                 metric_cols,
-                plots_dir,
-                config_label=config_label,
-                weights=config.weights,
-                # stations=["BRUX"],
-                include_titles=include_titles,
+                title=(f"Station score over time<br>{footer}"),
+                plots_dir=plots_dir,
+                stations=["DARW"],
             )
             log.info("Score trend fits")
             _, fits = make_trend_fits(
@@ -150,20 +120,15 @@ def plot(config_path: Path, include_titles=True) -> None:
             make_trend_map(
                 fits,
                 ranks,
-                plots_dir,
-                config_label=config_label,
-                weights=config.weights,
-                include_titles=include_titles,
+                title=(f"Score trend per station<br>{footer}"),
+                plots_dir=plots_dir,
             )
             log.info("Lat trends")
             make_lat_trends(
                 fits,
                 ranks,
-                plots_dir,
-                variant.name,
-                config_label=config_label,
-                weights=config.weights,
-                include_titles=include_titles,
+                title=("Mean score trend by geographic latitude (20 degree bins)"),
+                plots_dir=plots_dir,
             )
             log.info("Station metrics")
             metric_stations = ["BRUX", "TOW2", "DARW"]

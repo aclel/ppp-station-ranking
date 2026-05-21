@@ -1,3 +1,5 @@
+from config import ScoreConfig, Variant
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -101,3 +103,34 @@ def format_config_footer(config_label: str, weights: dict[str, float]) -> str:
     sorted_weights = sorted(weights.items(), key=lambda kv: kv[1], reverse=True)
     parts = " ".join(f"{m}={w:g}" for m, w in sorted_weights)
     return f"<sub>Config: {config_label}  |  Weights: {parts}</sub>"
+
+
+def load_ranks(config: ScoreConfig, variant: Variant, stations):
+    """Load ranks for a given variant from results dir
+    configured in the scenario config yaml. Also merges with
+    stations for easy plotting, and loads metrics for each
+    station with associated weights so that they can be plotted
+    on interactive maps in hover.
+    """
+    results_dir = config.output_dir / variant.name
+    ranks = pd.read_csv(results_dir / "ranking.csv").merge(
+        stations[["station", "Latitude", "Longitude"]],
+        on="station",
+        how="left",
+    )
+    metric_cols = [
+        c
+        for c in ranks.columns
+        if c
+        not in {
+            "station",
+            "window_start",
+            "window_end",
+            "score",
+            "rank",
+            "Latitude",
+            "Longitude",
+        }
+    ]
+    metric_cols.sort(key=lambda m: config.weights.get(m, float("-inf")), reverse=True)
+    return ranks, metric_cols
