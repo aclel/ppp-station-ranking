@@ -69,14 +69,14 @@ def plot(config_path: Path, include_titles=True) -> None:
             include_titles=include_titles,
         )
 
+        footer = format_config_footer(config_label, config.weights)
         if is_global:
-            footer = format_config_footer(config_label, config.weights)
             log.info("Rank map")
             make_map(
                 ranks,
                 metric_cols,
-                plots_dir,
                 title=(f"Station Ranks - {variant.name}<br>{footer}"),
+                plots_dir=plots_dir,
             )
             log.info("IGc20 Agreement")
             make_agreement_map(
