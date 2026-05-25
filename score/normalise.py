@@ -27,20 +27,26 @@ def normalise(df: pd.DataFrame, peer_relative=False):
             "median"
         )
 
-    abs99 = oriented.abs().groupby(df["metric"]).transform("quantile", 0.99)
-    score = (oriented / abs99).clip(-1, 1) * 0.5 + 0.5  # → [0, 1] with 0.5 = at peer
+    # abs99 = oriented.abs().groupby(df["metric"]).transform("quantile", 0.99)
+    # score = (oriented / abs99).clip(-1, 1) * 0.5 + 0.5  # → [0, 1] with 0.5 = at peer
 
-    # # Winsorise to 1% and 99%. The outliers are still kept, they're just clipped
-    # # to the floor/ceiling. We don't want to remove them because we still want
-    # # to know that the station is producing very large/small numbers.
-    # lower_pct = 0.01
-    # upper_pct = 0.99
-    # g = oriented.groupby(df["metric"])
-    # lo = g.transform("quantile", lower_pct)
-    # hi = g.transform("quantile", upper_pct)
-    # constant = (lo == hi) | ~np.isfinite(hi - lo)
+    # Winsorise to 1% and 99%. The outliers are still kept, they're just clipped
+    # to the floor/ceiling. We don't want to remove them because we still want
+    # to know that the station is producing very large/small numbers.
+    lower_pct = 0.01
+    upper_pct = 0.99
+    g = oriented.groupby(df["metric"])
+    lo = g.transform("quantile", lower_pct)
+    hi = g.transform("quantile", upper_pct)
+    constant = (lo == hi) | ~np.isfinite(hi - lo)
 
-    # clipped = ((oriented < lo) | (oriented > hi)) & ~constant
-    # score = ((oriented.clip(lo, hi) - lo) / (hi - lo)).where(~constant, 0.5)
+    # Clip to top and bottom pctile
+    clipped = oriented.clip(lo, hi)
 
-    return df.assign(score=score)
+    # Minmax scaling from 0-1
+    minmax_scaled = (clipped - lo) / (hi - lo)
+
+    # Subsitute zero if there is division by zero or Nan
+    metric_score = (minmax_scaled).where(~constant, 0)
+
+    return df.assign(score=metric_score)
