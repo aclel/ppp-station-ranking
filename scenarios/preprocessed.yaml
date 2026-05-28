@@ -3,7 +3,7 @@ output_dir: ../results/preprocessed
 start_date: "2019-01-01"
 end_date: "2025-12-31"
 window_days: null
-cache_dir: cache2/query
+cache_dir: cache/query
 peer_relative: True
 
 weights:
