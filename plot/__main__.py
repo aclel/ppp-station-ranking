@@ -63,7 +63,7 @@ def plot(config_path: Path, include_titles=True) -> None:
 
         log.info("Rank map")
         make_station_map(
-            stations_file="data/stations.txt",
+            stations_file=str(config.stations_file) if config.stations_file else "data/stations.txt",
             igs_csv=igs_csv,
             plots_dir=plots_dir,
             include_titles=include_titles,

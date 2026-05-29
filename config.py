@@ -28,6 +28,7 @@ class ScoreConfig:
     peer_relative: bool = (
         True  # Metric minus network median to remove effects of PPP product improvement
     )
+    stations_file: Path | None = None
 
 
 Variant.topsis = Variant(name="topsis", aggregator="topsis")
@@ -42,6 +43,7 @@ def _read_yaml(path) -> dict:
 
 
 def _build_config(raw: dict, base_dir: Path) -> ScoreConfig:
+    stations_file = raw.get("stations_file")
     return ScoreConfig(
         name=raw["name"],
         output_dir=(base_dir / raw["output_dir"]).resolve(),
@@ -52,6 +54,7 @@ def _build_config(raw: dict, base_dir: Path) -> ScoreConfig:
         variants=tuple(Variant(**v) for v in raw["variants"]),
         window_days=int(raw["window_days"]) if raw["window_days"] else None,
         peer_relative=raw["peer_relative"],
+        stations_file=Path(stations_file).resolve() if stations_file else None,
     )
 
 
@@ -62,6 +65,8 @@ def _validate(config: ScoreConfig) -> None:
     unknown = set(config.weights) - METRICS.keys()
     if unknown:
         errors.append(f"weights for unconfigured metrics: {unknown}")
+    if config.stations_file and not config.stations_file.exists():
+        errors.append(f"stations_file not found: {config.stations_file}")
 
     # TODO: Validate scoring variant names
     if errors:

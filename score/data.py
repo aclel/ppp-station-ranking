@@ -13,6 +13,12 @@ import pandas as pd
 import numpy as np
 
 
+def _station_set(config) -> set[str] | None:
+    if config.stations_file is None:
+        return None
+    return set(config.stations_file.read_text().splitlines())
+
+
 def _read_family(cache_dir: Path, family: str, year_months: list[str]) -> pd.DataFrame:
     return pd.concat(
         pd.read_parquet(cache_dir / family / f"{year_month}.parquet")
@@ -122,7 +128,13 @@ def score_satellite_gaps(config) -> pd.DataFrame:
         sums["score"] = 0.5
 
     sums["metric"] = "satellite_gaps"
-    return sums[["station", "window_start", "window_end", "metric", "score"]]
+    result = sums[["station", "window_start", "window_end", "metric", "score"]]
+
+    stations = _station_set(config)
+    if stations is not None:
+        result = result[result["station"].isin(stations)]
+
+    return result
 
 
 def score_uptime(config) -> pd.DataFrame:
@@ -155,7 +167,13 @@ def score_uptime(config) -> pd.DataFrame:
     out["score"] = out["n_days"] / span
     out["metric"] = "uptime"
 
-    return out[["station", "window_start", "window_end", "metric", "score"]]
+    result = out[["station", "window_start", "window_end", "metric", "score"]]
+
+    stations = _station_set(config)
+    if stations is not None:
+        result = result[result["station"].isin(stations)]
+
+    return result
 
 
 def load_metrics(config: ScoreConfig) -> pd.DataFrame:
@@ -185,7 +203,13 @@ def load_metrics(config: ScoreConfig) -> pd.DataFrame:
     # HACK: remove August 31 2020 - many stations with very poor phase RMS, convergence time - unhealthy satellite
     df = df[~df["date"].between("2022-08-31", "2022-08-31")]
 
-    return df[
+    df = df[
         (df["date"] >= pd.Timestamp(config.start_date))
         & (df["date"] <= pd.Timestamp(config.end_date))
     ]
+
+    stations = _station_set(config)
+    if stations is not None:
+        df = df[df["station"].isin(stations)]
+
+    return df

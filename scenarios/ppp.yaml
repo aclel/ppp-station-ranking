@@ -5,6 +5,7 @@ end_date: "2025-12-31"
 window_days: null
 cache_dir: cache/query
 peer_relative: True
+stations_file: data/stations.txt
                                                                                                                                                                                                                
 weights:
   phase_wrms: 0.225
