@@ -6,3 +6,4 @@ pyarrow
 pytest
 pyyaml
 matplotlib
+kaleido
