@@ -1,5 +1,4 @@
 import pandas as pd
-from metrics import extremes
 
 
 PATTERN = "*station_observations.parquet"
@@ -10,22 +9,18 @@ def observations_sql(files: list[str], conn) -> pd.DataFrame:
     if not files:
         return empty_frame()
 
-    cn0_low, cn0_hi = extremes("cn0")
-
-    sql = f"""  
+    sql = f"""
         SELECT                                                                                                                      
             UPPER(LEFT(regexp_extract(filename, '/([A-Z0-9]{{4}})/', 1), 4)) AS station,                                              
             CAST(datetime AS DATE) AS day,                                                                                          
             AVG(snr) AS cn0                                                                                                    
         FROM read_parquet({files}, filename=true)
         WHERE status = 'OBSERVED'                                                                                                   
-            AND elevation > 10                                                                                                        
-            AND snr IS NOT NULL
-            AND snr BETWEEN ? AND ?                                                                                                     
+            AND elevation > 10                                                                                        
         GROUP BY station, day                                                                                                       
         ORDER BY station, day
     """
-    return conn.execute(sql, [cn0_low, cn0_hi]).df()
+    return conn.execute(sql).df()
 
 
 def empty_frame() -> pd.DataFrame:
