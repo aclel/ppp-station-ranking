@@ -39,11 +39,11 @@ def _load_postfit_residuals(cache_dir, months, needed) -> pd.DataFrame:
     ).dropna(subset=["value"])
 
 
-def _load_amb_resets(cache_dir, months) -> pd.DataFrame:
-    df = _read_family(cache_dir, "amb_resets", months).rename(
+def _load_amb_resets(cache_dir, months, family: str, metric: str) -> pd.DataFrame:
+    df = _read_family(cache_dir, family, months).rename(
         columns={"day": "date", "amb_resets": "value"}
     )
-    df["metric"] = "amb_resets"
+    df["metric"] = metric
     return df[["station", "date", "metric", "value"]].dropna(subset=["value"])
 
 
@@ -187,7 +187,15 @@ def load_metrics(config: ScoreConfig) -> pd.DataFrame:
     if needed & {"phase_wrms", "code_wrms"}:
         frames.append(_load_postfit_residuals(config.cache_dir, months, needed))
     if "amb_resets" in needed:
-        frames.append(_load_amb_resets(config.cache_dir, months))
+        frames.append(
+            _load_amb_resets(config.cache_dir, months, "amb_resets", "amb_resets")
+        )
+    if "amb_resets_no_kf" in needed:
+        frames.append(
+            _load_amb_resets(
+                config.cache_dir, months, "amb_resets_no_kf", "amb_resets_no_kf"
+            )
+        )
     if "cn0" in needed:
         frames.append(_load_observations(config.cache_dir, months))
     if needed & {"h_conv", "v_conv"}:

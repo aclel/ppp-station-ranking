@@ -9,6 +9,7 @@ from .postfit_residuals import (
 from .ambiguity_resets import (
     PATTERN as AMB_PATTERN,
     amb_resets_sql,
+    amb_resets_no_kf_sql,
     empty_frame as _amb_empty,
 )
 from .observations import (
@@ -37,6 +38,9 @@ BUILDERS = {
         build_df, residuals_sql, RESIDUALS_PATTERN, _residuals_empty
     ),
     "amb_resets": partial(build_df, amb_resets_sql, AMB_PATTERN, _amb_empty),
+    "amb_resets_no_kf": partial(
+        build_df, amb_resets_no_kf_sql, AMB_PATTERN, _amb_empty
+    ),
     "observations": partial(build_df, observations_sql, OBS_PATTERN, _obs_empty),
     "position": partial(build_df, position_sql, POS_PATTERN, _pos_empty),
     "linear_combinations": partial(

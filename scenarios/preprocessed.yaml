@@ -9,7 +9,7 @@ peer_relative: True
 weights:
   satellite_gaps: 1
   uptime: 1
-  amb_resets: 1
+  amb_resets_no_kf: 1
   cn0: 1
   mp1: 1
   mp2: 1
