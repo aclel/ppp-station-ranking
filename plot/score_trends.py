@@ -19,6 +19,7 @@ def make_trends(
     df["window_mid"] = df["window_start"] + (df["window_end"] - df["window_start"]) / 2
 
     all_windows = df[["window_start", "window_end", "window_mid"]].drop_duplicates()
+    typical_step = all_windows["window_mid"].sort_values().diff().median()
     if stations:
         df = df[df["station"].isin(stations)]
 
@@ -27,6 +28,20 @@ def make_trends(
         sub = all_windows.merge(
             sub, on=["window_start", "window_end", "window_mid"], how="left"
         ).sort_values("window_mid")
+
+        # Periods where no station has a window at all are absent from
+        # all_windows entirely, so the merge above can't fill them with a
+        # NaN score. Insert an explicit break so connectgaps=False also
+        # stops the line across these fully-missing stretches.
+        gaps = sub["window_mid"].diff() > typical_step * 1.5
+        if gaps.any():
+            breaks = pd.DataFrame(
+                {"window_mid": sub.loc[gaps, "window_mid"] - typical_step / 2}
+            )
+            sub = pd.concat([sub, breaks], ignore_index=True).sort_values(
+                "window_mid"
+            )
+
         hover = sub.apply(
             lambda r: (
                 ""
