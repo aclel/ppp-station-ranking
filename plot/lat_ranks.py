@@ -7,7 +7,7 @@ from .utils import format_config_footer
 
 
 def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
-    bin_edges = np.arange(-90, 91, 20)
+    bin_edges = np.arange(-90, 91, 30)
     bin_labels = (bin_edges[:-1] + bin_edges[1:]) / 2
 
     binned = ranking_df.assign(
@@ -27,6 +27,7 @@ def _plot_rank_by_lat_bin(ranking_df, lat_col, title, out_path):
         xaxis_title="Latitude bin centre (°)",
         yaxis_title="Mean rank",
     )
+    fig.update_xaxes(tickmode="array", tickvals=bin_labels)
     if out_path:
         fig.write_html(out_path, include_plotlyjs="cdn", full_html=True)
 
@@ -44,7 +45,7 @@ def make_lat_ranks(ranking_df, title, plots_dir: Path = None):
 
 
 def _plot_trend_by_lat_bin(fits_with_lat, lat_col, title, out_path):
-    bin_edges = np.arange(-90, 91, 20)
+    bin_edges = np.arange(-90, 91, 30)
     bin_labels = (bin_edges[:-1] + bin_edges[1:]) / 2
 
     binned = fits_with_lat.assign(
@@ -75,6 +76,7 @@ def _plot_trend_by_lat_bin(fits_with_lat, lat_col, title, out_path):
         xaxis_title="Latitude bin centre (°)",
         yaxis_title="Mean slope (score / year)",
     )
+    fig.update_xaxes(tickmode="array", tickvals=bin_labels)
     if out_path:
         fig.write_html(out_path, include_plotlyjs="cdn", full_html=True)
     return fig
