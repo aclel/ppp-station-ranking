@@ -1,8 +1,9 @@
+# This scenario produces a score for each station for each day in the timeseries
 name: ppp_windowed
 output_dir: ../results/ppp_windowed
 start_date: "2019-01-01"
 end_date: "2025-12-31"
-window_days: 1
+window_days: 1  # Station scores are produced every day
 cache_dir: cache/query
 peer_relative: True
 stations_file: data/stations.txt
